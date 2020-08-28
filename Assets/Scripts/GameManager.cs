@@ -5,22 +5,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
     // Set in inspector
     [Header("--- Prefab References --- ")]
     public GameObject basicCubePrefab;
 
-    [Header("--- Obj/Script References --- ")]
-    public InputAndCameraManager inputCamManager;
-    public GameObject cubeGridHolder;
-
     [Header("--- Dynamic Variables --- ")]
     public int numRowsCols = 5;
     public float mineQuantityVal = 0.2065f;
 
+    [Header("--- Obj References --- ")]
+    public GameObject allCubeHolder;
+
     // Private vars
     private float cubeLengthWidthHeight = 0;
+    private float interCubeAdditionalSpacing = 0.2f;
     private int numMines;
     private bool minesHaveBeenPlanted = false;
     private GameObject mineHolder;
@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     private GameObject[,,] correspondingCubeGrid3DArray;
 
     // Start is called before the first frame update
-    private void Start()
+    private void Awake()
     {
         // Init variables
         cubeLengthWidthHeight = basicCubePrefab.transform.localScale.x;
@@ -49,12 +49,12 @@ public class GameManager : MonoBehaviour
     {
         mineHolder = new GameObject();
         mineHolder.name = "Mine Holder";
-        mineHolder.transform.SetParent(cubeGridHolder.transform);
+        mineHolder.transform.SetParent(allCubeHolder.transform);
 
         buildCubeGrid();
 
         // Once initial setup is finished, start the game
-        inputCamManager.setPlayerInputAllowed(true);
+        InputAndCameraManager.Instance.setPlayerInputAllowed(true);
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public class GameManager : MonoBehaviour
                 for (int j = 1; j <= numRowsCols; j++)
                 {
                     GameObject currentCube = Instantiate(basicCubePrefab, new Vector3(currentSpawnX, currentSpawnY, currentSpawnZ), Quaternion.identity);
-                    currentCube.transform.SetParent(cubeGridHolder.transform);
+                    currentCube.transform.SetParent(allCubeHolder.transform);
                     // Set the cube's index and type
                     currentCube.GetComponent<CubeIdentifier>().cubeXIndex = j-1;
                     currentCube.GetComponent<CubeIdentifier>().cubeYIndex = currentLayer-1;
@@ -108,14 +108,14 @@ public class GameManager : MonoBehaviour
                         {
                             centerGridCube = currentCube;
                             currentCube.name = "MIDDLEMOST";
-                            inputCamManager.setCenterCubeReference(currentCube);
+                            InputAndCameraManager.Instance.setCenterCubeReference(currentCube);
                             searchForMiddleCube = false;
                         }
                     }
 
-                    currentSpawnX += cubeLengthWidthHeight;
+                    currentSpawnX += cubeLengthWidthHeight + interCubeAdditionalSpacing;
                 }
-                currentSpawnZ += cubeLengthWidthHeight;
+                currentSpawnZ += cubeLengthWidthHeight + interCubeAdditionalSpacing;
                 /* Incrementing z means we have need to reset our x to 
                  * keep everything in line */
                 currentSpawnX = originalSpawnX;
@@ -135,7 +135,7 @@ public class GameManager : MonoBehaviour
                  * go upwards */
                 currentSpawnX = originalSpawnX;
                 currentSpawnZ = originalSpawnZ;
-                currentSpawnY += cubeLengthWidthHeight;
+                currentSpawnY += cubeLengthWidthHeight + interCubeAdditionalSpacing;
             }
         } 
     }
@@ -310,7 +310,7 @@ public class GameManager : MonoBehaviour
     /// <param name="firstCubeThatWasClicked"></param>
     public void plantMinesThroughoutGrid(GameObject firstCubeThatWasClicked)
     {
-        inputCamManager.setPlayerInputAllowed(false);
+        InputAndCameraManager.Instance.setPlayerInputAllowed(false);
 
         int firstClickedCubeX = firstCubeThatWasClicked.GetComponent<CubeIdentifier>().cubeXIndex;
         int firstClickedCubeY = firstCubeThatWasClicked.GetComponent<CubeIdentifier>().cubeYIndex;
@@ -345,6 +345,6 @@ public class GameManager : MonoBehaviour
         
         // Set proper flags on exit
         minesHaveBeenPlanted = true;
-        inputCamManager.setPlayerInputAllowed(true);
+        InputAndCameraManager.Instance.setPlayerInputAllowed(true);
     }
 }

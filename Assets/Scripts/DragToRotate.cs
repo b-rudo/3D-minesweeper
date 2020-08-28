@@ -5,7 +5,7 @@
  */
 using UnityEngine;
 
-public class DragToRotate : MonoBehaviour
+public class DragToRotate : Singleton<DragToRotate>
 {
     public float distance = 2.0f;
     public float xSpeed = 20.0f;
@@ -14,7 +14,7 @@ public class DragToRotate : MonoBehaviour
     public float yMaxLimit = 90f;
     public float distanceMin = 10f;
     public float distanceMax = 10f;
-    public float smoothTime = 2f;
+    public float smoothTime = 20f;
 
     private float rotationYAxis = 0.0f;
     private float rotationXAxis = 0.0f;

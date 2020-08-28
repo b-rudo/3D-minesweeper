@@ -150,7 +150,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &329940625
 MonoBehaviour:
@@ -166,10 +166,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   basicCubePrefab: {fileID: 2810209466032073978, guid: 2142c322623fba84f803281d7ebd16df,
     type: 3}
-  inputCamManager: {fileID: 382092899}
-  cubeGridHolder: {fileID: 1350612594}
   numRowsCols: 8
-  mineQuantityVal: 0.2065
+  mineQuantityVal: 0.1
+  allCubeHolder: {fileID: 670512908}
 --- !u!1 &382092898
 GameObject:
   m_ObjectHideFlags: 0
@@ -180,6 +179,7 @@ GameObject:
   m_Component:
   - component: {fileID: 382092900}
   - component: {fileID: 382092899}
+  - component: {fileID: 382092901}
   m_Layer: 0
   m_Name: InputManager
   m_TagString: Untagged
@@ -199,13 +199,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a14bc8219398014f9b6ab34f08740cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraLeftKey: a
-  cameraRightKey: d
-  cameraUpKey: w
-  cameraDownKey: s
+  cubeDragKey1: 308
+  cubeDragKey2: 307
   cameraRotateSpeed: 0.05
-  gameManager: {fileID: 329940625}
-  dragToRotate: {fileID: 1350612596}
 --- !u!4 &382092900
 Transform:
   m_ObjectHideFlags: 0
@@ -213,6 +209,77 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 382092898}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.7762012, y: 2.0407515, z: 5.335618}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &382092901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 382092898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31de5a4422143064da71be7ca9cc1971, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  distance: 2
+  xSpeed: 20
+  ySpeed: 20
+  yMinLimit: -90
+  yMaxLimit: 90
+  distanceMin: 10
+  distanceMax: 10
+  smoothTime: 2
+--- !u!1 &670512908
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 670512910}
+  - component: {fileID: 670512909}
+  m_Layer: 0
+  m_Name: All Cube Holder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &670512909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670512908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31de5a4422143064da71be7ca9cc1971, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  distance: 2
+  xSpeed: 20
+  ySpeed: 20
+  yMinLimit: -90
+  yMaxLimit: 90
+  distanceMin: 10
+  distanceMax: 10
+  smoothTime: 20
+--- !u!4 &670512910
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670512908}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.7762012, y: 2.0407515, z: 5.335618}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -294,7 +361,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 8.66e-43, y: -1.5137389e-16, z: 4.5905e-41, w: -1.5136098e-16}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -305,13 +372,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_Father: {fileID: 963194228}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -323,6 +390,7 @@ GameObject:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
+  - component: {fileID: 963194229}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -391,58 +459,20 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 705507995}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1350612594
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1350612595}
-  - component: {fileID: 1350612596}
-  m_Layer: 0
-  m_Name: CubeGridHolder
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1350612595
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1350612594}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.8354492, y: 5.3218994, z: 1.6552734}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1350612596
+--- !u!114 &963194229
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1350612594}
+  m_GameObject: {fileID: 963194225}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31de5a4422143064da71be7ca9cc1971, type: 3}
+  m_Script: {fileID: 11500000, guid: 35ed53e82af99a74a90876502cf73764, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distance: 2
-  xSpeed: 20
-  ySpeed: 20
-  yMinLimit: -90
-  yMaxLimit: 90
-  distanceMin: 10
-  distanceMax: 10
-  smoothTime: 10

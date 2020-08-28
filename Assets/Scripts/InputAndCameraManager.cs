@@ -5,21 +5,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputAndCameraManager : MonoBehaviour
+public class InputAndCameraManager : Singleton<InputAndCameraManager>
 {
     // Set in inspector
     [Header("--- Controls --- ")]
-    public string cameraLeftKey = "a";
-    public string cameraRightKey = "d";
-    public string cameraUpKey = "w";
-    public string cameraDownKey = "s";
+    /*
+    public KeyCode cameraLeftKey;
+    public KeyCode cameraRightKey;
+    public KeyCode cameraUpKey;
+    public KeyCode cameraDownKey;
+    */
+    public KeyCode cubeDragKey1;
+    public KeyCode cubeDragKey2;
 
     [Header("--- Other Dynamic Vars --- ")]
     public float cameraRotateSpeed = 0.05f;
-
-    [Header("--- Obj Script References --- ")]
-    public GameManager gameManager;
-    public DragToRotate dragToRotate;
 
     // Private
     private GameObject centerCubeReference;
@@ -32,7 +32,7 @@ public class InputAndCameraManager : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        int gridNumRowsCols = gameManager.getNumRowsCols();
+        int gridNumRowsCols = GameManager.Instance.getNumRowsCols();
 
         /* First set the camera's correct z value based on how big the cube
          * grid is */
@@ -56,6 +56,7 @@ public class InputAndCameraManager : MonoBehaviour
             // Keyboard input 
             if (centerCubeReference != null)
             {
+                /*
                 if (Input.GetKey(cameraLeftKey))
                 {
                     moveCameraAroundGrid(cameraMovementDirection.left);
@@ -72,10 +73,11 @@ public class InputAndCameraManager : MonoBehaviour
                 {
                     moveCameraAroundGrid(cameraMovementDirection.down);
                 }
+                */
             }
 
             // Mouse input
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && !Input.GetKey(cubeDragKey1) && !Input.GetKey(cubeDragKey2))
                 StartCoroutine(revealCube());
             else if (Input.GetMouseButtonDown(2))
                 placeMineMarker();
@@ -92,11 +94,11 @@ public class InputAndCameraManager : MonoBehaviour
 
         if (cube != null)
         {
-            if (!gameManager.getMinesHaveBeenPlanted())
+            if (!GameManager.Instance.getMinesHaveBeenPlanted())
             {
-                gameManager.plantMinesThroughoutGrid(cube);
+                GameManager.Instance.plantMinesThroughoutGrid(cube);
                 // We must wait until all mines are planted to continue
-                yield return new WaitUntil(() => gameManager.getMinesHaveBeenPlanted() == true);
+                yield return new WaitUntil(() => GameManager.Instance.getMinesHaveBeenPlanted() == true);
             }
 
             // Check what kind of cube we just clicked
@@ -107,7 +109,7 @@ public class InputAndCameraManager : MonoBehaviour
             else
             {
                 CubeIdentifier cubeID = cube.GetComponent<CubeIdentifier>();
-                gameManager.givenCubeCoordsDeleteCloseByCubesIfSafe(cubeID.cubeXIndex, cubeID.cubeYIndex, cubeID.cubeZIndex);
+                GameManager.Instance.givenCubeCoordsDeleteCloseByCubesIfSafe(cubeID.cubeXIndex, cubeID.cubeYIndex, cubeID.cubeZIndex);
             }
         }
 
@@ -210,6 +212,6 @@ public class InputAndCameraManager : MonoBehaviour
         Camera.main.transform.LookAt(centerCubeReference.transform);
 
         //
-        dragToRotate.setCenterCubeReference(obj);
+        DragToRotate.Instance.setCenterCubeReference(obj);
     }
 }
