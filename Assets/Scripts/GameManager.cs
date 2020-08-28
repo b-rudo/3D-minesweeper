@@ -144,6 +144,87 @@ public class GameManager : MonoBehaviour
         } 
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="mineCoords"></param>
+    private void givenMineCoordsUpdateAllContactingCubes(int xCoord, int yCoord, int zCoord)
+    {
+        // Y
+        updateContactingCubesInValidParamLayer(xCoord, yCoord, zCoord);
+
+        // Y - 1
+        if (yCoord - 1 > -1)
+            updateContactingCubesInValidParamLayer(xCoord, yCoord - 1, zCoord);
+        // Y + 1
+        if (yCoord + 1 < numRowsCols)
+            updateContactingCubesInValidParamLayer(xCoord, yCoord + 1, zCoord);
+
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="xCoord"></param>
+    /// <param name="zCoord"></param>
+    /// <param name="yLayer"></param>
+    private void updateContactingCubesInValidParamLayer(int xCoord, int yLayer, int zCoord)
+    {
+
+        // X //////
+        /* Check the base parameter location, as if we are on a layer above or
+         * below the mine, the spot might not be a mine */
+        incrementContactingCubesForSingleParamLocation(xCoord, yLayer, zCoord);
+        // x, z + 1
+        if (zCoord + 1 < numRowsCols)
+            incrementContactingCubesForSingleParamLocation(xCoord, yLayer, zCoord + 1);
+        // x, z - 1
+        if (zCoord - 1 > -1)
+            incrementContactingCubesForSingleParamLocation(xCoord, yLayer, zCoord - 1);
+
+        // X PLUS ONE //////
+        if (xCoord + 1 < numRowsCols)
+        {
+            // x + 1, z
+            incrementContactingCubesForSingleParamLocation(xCoord + 1, yLayer, zCoord);
+
+            // x + 1, z + 1
+            if (zCoord + 1 < numRowsCols)
+                incrementContactingCubesForSingleParamLocation(xCoord + 1, yLayer, zCoord + 1);
+     
+            // x + 1, z - 1
+            if (zCoord - 1 > -1)
+                incrementContactingCubesForSingleParamLocation(xCoord + 1, yLayer, zCoord - 1);
+        }
+
+        // X MINUS ONE //////
+        if (xCoord - 1 > -1)
+        {
+            // x - 1, z
+            incrementContactingCubesForSingleParamLocation(xCoord - 1, yLayer, zCoord);
+
+            // x - 1, z + 1
+            if (zCoord + 1 < numRowsCols)
+                incrementContactingCubesForSingleParamLocation(xCoord - 1, yLayer, zCoord + 1);
+
+            // x - 1, z - 1
+            if (zCoord - 1 > -1)
+                incrementContactingCubesForSingleParamLocation(xCoord - 1, yLayer, zCoord - 1);
+        }
+    }
+
+    /// <summary>
+    /// REQUIRES: Check to ensure x, y, z are within array bounds.
+    /// </summary>
+    /// <param name="xCoord"></param>
+    /// <param name="yCoord"></param>
+    /// <param name="zCoord"></param>
+    private void incrementContactingCubesForSingleParamLocation(int xCoord, int yCoord, int zCoord)
+    {
+        if (correspondingCubeGrid3DArray[xCoord, yCoord, zCoord].GetComponent<CubeIdentifier>().cubeType != CubeIdentifier.cubeTypes.mine)
+            correspondingCubeGrid3DArray[xCoord, yCoord, zCoord].GetComponent<CubeIdentifier>().sidesTouchingMines += 1;
+    }
+
     /* ************************************************************************
      *                          PUBLIC FUNCTIONS
      * ***********************************************************************/
@@ -164,6 +245,63 @@ public class GameManager : MonoBehaviour
     public bool getMinesHaveBeenPlanted()
     {
         return minesHaveBeenPlanted;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="xCoord"></param>
+    /// <param name="yCoord"></param>
+    /// <param name="zCoord"></param>
+    public void givenCubeCoordsDeleteCloseByCubesIfSafe(int xCoord, int yCoord, int zCoord)
+    {
+        CubeIdentifier cubeID = correspondingCubeGrid3DArray[xCoord, yCoord, zCoord].GetComponent<CubeIdentifier>();
+
+        // Hitting a mine means we return
+        if (cubeID.cubeType == CubeIdentifier.cubeTypes.mine)
+            return;
+
+        if (cubeID.sidesTouchingMines == 0 && cubeID.gameObject.activeSelf)
+        {
+            cubeID.gameObject.SetActive(false);
+
+            for (int yLayer = yCoord-1; yLayer < (yCoord + 2); yLayer++)
+            {
+                if (yLayer < numRowsCols && yLayer > -1)
+                {
+
+                    // X PLUS ONE
+                    if (xCoord + 1 < numRowsCols)
+                    {
+                        // x + 1, z
+                        givenCubeCoordsDeleteCloseByCubesIfSafe(xCoord + 1, yLayer, zCoord);
+
+                        // x + 1, z + 1
+                        if (zCoord + 1 < numRowsCols)
+                            givenCubeCoordsDeleteCloseByCubesIfSafe(xCoord + 1, yLayer, zCoord + 1);
+
+                        // x + 1, z - 1
+                        if (zCoord - 1 > -1)
+                            givenCubeCoordsDeleteCloseByCubesIfSafe(xCoord + 1, yLayer, zCoord - 1);
+                    }
+
+                    // X MINUS ONE
+                    if (xCoord - 1 > -1)
+                    {
+                        // x - 1, z
+                        givenCubeCoordsDeleteCloseByCubesIfSafe(xCoord - 1, yLayer, zCoord);
+
+                        // x - 1, z + 1
+                        if (zCoord + 1 < numRowsCols)
+                            givenCubeCoordsDeleteCloseByCubesIfSafe(xCoord - 1, yLayer, zCoord + 1);
+
+                        // x - 1, z - 1
+                        if (zCoord - 1 > -1)
+                            givenCubeCoordsDeleteCloseByCubesIfSafe(xCoord - 1, yLayer, zCoord - 1);
+                    }
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -201,18 +339,7 @@ public class GameManager : MonoBehaviour
 
                 /* Now, we need to go through each cube that this newly-placed
                  * mine touches and update its value */
-
-                if (randomX + 1 < numRowsCols)
-                {
-                    correspondingCubeGrid3DArray[randomX+1, randomY, randomZ].gameObject.GetComponent<CubeIdentifier>().sidesTouchingMines += 1;
-
-                    if (randomY + 1 < numRowsCols)
-                        correspondingCubeGrid3DArray[randomX + 1, randomY + 1, randomZ].gameObject.GetComponent<CubeIdentifier>().sidesTouchingMines += 1;
-
-                    if (randomZ + 1 < numRowsCols)
-                        correspondingCubeGrid3DArray[randomX + 1, randomY, randomZ + 1].gameObject.GetComponent<CubeIdentifier>().sidesTouchingMines += 1;
-
-                }
+                givenMineCoordsUpdateAllContactingCubes(randomX, randomY, randomZ);
             }
         }
         

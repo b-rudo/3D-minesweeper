@@ -167,7 +167,8 @@ MonoBehaviour:
   basicCubePrefab: {fileID: 2810209466032073978, guid: 2142c322623fba84f803281d7ebd16df,
     type: 3}
   inputCamManager: {fileID: 382092899}
-  numRowsCols: 5
+  numRowsCols: 8
+  mineQuantityVal: 0.2065
 --- !u!1 &382092898
 GameObject:
   m_ObjectHideFlags: 0

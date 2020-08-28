@@ -103,6 +103,11 @@ public class InputAndCameraManager : MonoBehaviour
             {
                 playerClickedMine();
             }
+            else
+            {
+                CubeIdentifier cubeID = cube.GetComponent<CubeIdentifier>();
+                gameManager.givenCubeCoordsDeleteCloseByCubesIfSafe(cubeID.cubeXIndex, cubeID.cubeYIndex, cubeID.cubeZIndex);
+            }
         }
 
     }
