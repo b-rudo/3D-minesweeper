@@ -11,8 +11,9 @@ public class GameManager : MonoBehaviour
     [Header("--- Prefab References --- ")]
     public GameObject basicCubePrefab;
 
-    [Header("--- Obj Script References --- ")]
+    [Header("--- Obj/Script References --- ")]
     public InputAndCameraManager inputCamManager;
+    public GameObject cubeGridHolder;
 
     [Header("--- Dynamic Variables --- ")]
     public int numRowsCols = 5;
@@ -22,7 +23,6 @@ public class GameManager : MonoBehaviour
     private float cubeLengthWidthHeight = 0;
     private int numMines;
     private bool minesHaveBeenPlanted = false;
-    private GameObject cubeGridHolder;
     private GameObject mineHolder;
     private GameObject centerGridCube;
     private GameObject[,,] correspondingCubeGrid3DArray;
@@ -47,10 +47,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void initialSetup()
     {
-        // Create a holder gameobject for our cube grid
-        cubeGridHolder = new GameObject();
-        cubeGridHolder.name = "Cube Grid Holder";
-
         mineHolder = new GameObject();
         mineHolder.name = "Mine Holder";
         mineHolder.transform.SetParent(cubeGridHolder.transform);
@@ -301,6 +297,10 @@ public class GameManager : MonoBehaviour
                     }
                 }
             }
+        }
+        else if (cubeID.sidesTouchingMines != 0)
+        {
+            cubeID.showSidesTouchingMinesText();
         }
     }
 

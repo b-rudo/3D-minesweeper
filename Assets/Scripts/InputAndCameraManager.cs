@@ -19,6 +19,7 @@ public class InputAndCameraManager : MonoBehaviour
 
     [Header("--- Obj Script References --- ")]
     public GameManager gameManager;
+    public DragToRotate dragToRotate;
 
     // Private
     private GameObject centerCubeReference;
@@ -207,5 +208,8 @@ public class InputAndCameraManager : MonoBehaviour
                                                      centerCubeReference.transform.position.y,
                                                      Camera.main.transform.position.z);
         Camera.main.transform.LookAt(centerCubeReference.transform);
+
+        //
+        dragToRotate.setCenterCubeReference(obj);
     }
 }
