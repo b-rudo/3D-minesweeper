@@ -108,7 +108,10 @@ public class GameManager : Singleton<GameManager>
                         {
                             centerGridCube = currentCube;
                             currentCube.name = "MIDDLEMOST";
-                            InputAndCameraManager.Instance.setCenterCubeReference(currentCube);
+
+                            InputAndCameraManager.Instance.setCenterCubeReference(centerGridCube);
+                            DragToRotate.Instance.setCenterCubeReference(centerGridCube);
+
                             searchForMiddleCube = false;
                         }
                     }

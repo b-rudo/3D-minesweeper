@@ -9,21 +9,10 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
 {
     // Set in inspector
     [Header("--- Controls --- ")]
-    /*
-    public KeyCode cameraLeftKey;
-    public KeyCode cameraRightKey;
-    public KeyCode cameraUpKey;
-    public KeyCode cameraDownKey;
-    */
-    public KeyCode cubeDragKey1;
-    public KeyCode cubeDragKey2;
-
-    [Header("--- Other Dynamic Vars --- ")]
-    public float cameraRotateSpeed = 0.05f;
+    public KeyCode testKey;
 
     // Private
     private GameObject centerCubeReference;
-    private enum cameraMovementDirection { left, right, up, down }
     private readonly float cameraZDistanceMultiplier = 1.5f;
     private bool playerInputAllowed = false;
 
@@ -39,11 +28,6 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
         Camera.main.transform.position = new Vector3(Camera.main.transform.position.x,
                                                      Camera.main.transform.position.y,
                                                      -1 * cameraZDistanceMultiplier * gridNumRowsCols);
-
-        /* We also need to adjust the camera rotate speed, since having bigger
-         * grids and being zoomed out to a larger degree will slow how long it
-         * takes to rotate to another cube grid face */
-        cameraRotateSpeed *= gridNumRowsCols;
     }
 
     /// <summary>
@@ -53,34 +37,21 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
     {
         if (playerInputAllowed)
         {
-            // Keyboard input 
-            if (centerCubeReference != null)
-            {
-                /*
-                if (Input.GetKey(cameraLeftKey))
-                {
-                    moveCameraAroundGrid(cameraMovementDirection.left);
-                }
-                if (Input.GetKey(cameraRightKey))
-                {
-                    moveCameraAroundGrid(cameraMovementDirection.right);
-                }
-                if (Input.GetKey(cameraUpKey))
-                {
-                    moveCameraAroundGrid(cameraMovementDirection.up);
-                }
-                if (Input.GetKey(cameraDownKey))
-                {
-                    moveCameraAroundGrid(cameraMovementDirection.down);
-                }
-                */
-            }
-
-            // Mouse input
-            if (Input.GetMouseButtonDown(0) && !Input.GetKey(cubeDragKey1) && !Input.GetKey(cubeDragKey2))
+            // All mouse clicks
+            if (Input.GetMouseButtonDown(0))
                 StartCoroutine(revealCube());
             else if (Input.GetMouseButtonDown(2))
                 placeMineMarker();
+
+            // Mouse scrolls
+            if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+            {
+                CameraLogic.Instance.attemptZoomInOrOut('+');
+            }
+            else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+            {
+                CameraLogic.Instance.attemptZoomInOrOut('-');
+            }
         }
     }
 
@@ -90,7 +61,7 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
     /// <returns></returns>
     private IEnumerator revealCube()
     {
-        GameObject cube = returnClickedCubeIfExists();
+        GameObject cube = returnMousePosCubeIfExists();
 
         if (cube != null)
         {
@@ -135,7 +106,7 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
     /// 
     /// </summary>
     /// <returns></returns>
-    private GameObject returnClickedCubeIfExists()
+    private GameObject returnMousePosCubeIfExists()
     {
         // Send out a raycast to see if we clicked on a game cube
         RaycastHit hit;
@@ -150,38 +121,6 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
         return null;
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="dir"></param>
-    private void moveCameraAroundGrid(cameraMovementDirection dir)
-    {
-        Vector3 axis = new Vector3(0, 0, 0);
-
-        float newCamX = Camera.main.transform.position.x;
-        float newCamY = Camera.main.transform.position.y;
-        float newCamZ = Camera.main.transform.position.z;
-
-        switch (dir)
-        {
-            case (cameraMovementDirection.left):
-                axis.y = -1;
-                break;
-            case (cameraMovementDirection.right):
-                axis.y = 1;
-                break;
-            case (cameraMovementDirection.up):
-                axis.x = 1;
-                break;
-            case (cameraMovementDirection.down):
-                axis.x = -1;
-                break;
-            default:
-                break;
-        }
-
-        Camera.main.transform.RotateAround(centerCubeReference.transform.position, axis, cameraRotateSpeed);
-    }
 
     /* ************************************************************************
      *                          PUBLIC FUNCTIONS
@@ -206,12 +145,6 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
 
         /* Once we have the center cube reference, we can place the camera in
          * the correct starting position and orientation */
-        Camera.main.transform.position = new Vector3(centerCubeReference.transform.position.x,
-                                                     centerCubeReference.transform.position.y,
-                                                     Camera.main.transform.position.z);
-        Camera.main.transform.LookAt(centerCubeReference.transform);
-
-        //
-        DragToRotate.Instance.setCenterCubeReference(obj);
+        CameraLogic.Instance.setStartingCameraPos(centerCubeReference);
     }
 }

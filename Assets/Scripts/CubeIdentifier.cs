@@ -26,12 +26,31 @@ public class CubeIdentifier : MonoBehaviour
         textOfsidesTouchingMines.enabled = false;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     private void Update()
     {
         if (textOfsidesTouchingMines.enabled)
         {
             textOfsidesTouchingMines.transform.rotation = Quaternion.LookRotation(textOfsidesTouchingMines.transform.position - Camera.main.transform.position);
         }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private void OnMouseEnter()
+    {
+
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private void OnMouseExit()
+    {
+
     }
 
     /* ************************************************************************
@@ -48,5 +67,9 @@ public class CubeIdentifier : MonoBehaviour
 
         // Change our material to transparent to see the number
         GetComponent<Renderer>().material = transparentMat;
+
+        /* Also turn off our collider so players can "click through" the
+         * transparency */
+        GetComponent<BoxCollider>().enabled = false;
     }
 }

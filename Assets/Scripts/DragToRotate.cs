@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class DragToRotate : Singleton<DragToRotate>
 {
+    [Header("*** MUST BE ATTACHED TO CUBE GRID HOLDER PARENT")]
+
     public float distance = 2.0f;
     public float xSpeed = 20.0f;
     public float ySpeed = 20.0f;
@@ -21,7 +23,7 @@ public class DragToRotate : Singleton<DragToRotate>
     private float velocityX = 0.0f;
     private float velocityY = 0.0f;
 
-    private Transform cubeGridHolder;
+    private GameObject centerCubeReference = null;
 
     /// <summary>
     /// 
@@ -38,7 +40,7 @@ public class DragToRotate : Singleton<DragToRotate>
     /// </summary>
     void LateUpdate()
     {
-        if (cubeGridHolder)
+        if (centerCubeReference)
         {
             if (Input.GetMouseButton(0))
             {
@@ -48,7 +50,6 @@ public class DragToRotate : Singleton<DragToRotate>
             rotationYAxis += velocityX;
             rotationXAxis -= velocityY;
             rotationXAxis = ClampAngle(rotationXAxis, yMinLimit, yMaxLimit);
-            Quaternion fromRotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, 0);
             Quaternion toRotation = Quaternion.Euler(rotationXAxis, rotationYAxis, 0);
             Quaternion rotation = toRotation;
 
@@ -67,16 +68,12 @@ public class DragToRotate : Singleton<DragToRotate>
         return Mathf.Clamp(angle, min, max);
     }
 
-    /* ************************************************************************
-     *                          PUBLIC FUNCTIONS
-     * ***********************************************************************/
-
     /// <summary>
     /// 
     /// </summary>
     /// <param name="obj"></param>
     public void setCenterCubeReference(GameObject obj)
     {
-        cubeGridHolder = obj.transform;
+        centerCubeReference = obj;
     }
 }
