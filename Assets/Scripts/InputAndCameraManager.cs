@@ -9,7 +9,7 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
 {
     // Set in inspector
     [Header("--- Controls --- ")]
-    public KeyCode testKey;
+    public KeyCode expandShrinkCubeDistanceKey;
 
     // Private
     private GameObject centerCubeReference;
@@ -46,11 +46,17 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
             // Mouse scrolls
             if (Input.GetAxis("Mouse ScrollWheel") > 0f)
             {
-                CameraLogic.Instance.attemptZoomInOrOut('+');
+                if (Input.GetKey(expandShrinkCubeDistanceKey))
+                    GameManager.Instance.modifyInterCubeSpacing('-');
+                else
+                    CameraLogic.Instance.attemptZoomInOrOut('+');
             }
             else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
             {
-                CameraLogic.Instance.attemptZoomInOrOut('-');
+                if (Input.GetKey(expandShrinkCubeDistanceKey))
+                    GameManager.Instance.modifyInterCubeSpacing('+');
+                else
+                    CameraLogic.Instance.attemptZoomInOrOut('-');
             }
         }
     }

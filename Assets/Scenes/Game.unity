@@ -166,7 +166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   basicCubePrefab: {fileID: 2810209466032073978, guid: 2142c322623fba84f803281d7ebd16df,
     type: 3}
-  numRowsCols: 4
+  numRowsCols: 3
   mineQuantityVal: 0.1
   allCubeHolder: {fileID: 670512908}
 --- !u!1 &382092898
@@ -198,7 +198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a14bc8219398014f9b6ab34f08740cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testKey: 0
+  expandShrinkCubeDistanceKey: 306
 --- !u!4 &382092900
 Transform:
   m_ObjectHideFlags: 0

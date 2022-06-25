@@ -49,7 +49,7 @@ public class DragToRotate : Singleton<DragToRotate>
             }
             rotationYAxis += velocityX;
             rotationXAxis -= velocityY;
-            rotationXAxis = ClampAngle(rotationXAxis, yMinLimit, yMaxLimit);
+            //rotationXAxis = ClampAngle(rotationXAxis, yMinLimit, yMaxLimit);
             Quaternion toRotation = Quaternion.Euler(rotationXAxis, rotationYAxis, 0);
             Quaternion rotation = toRotation;
 

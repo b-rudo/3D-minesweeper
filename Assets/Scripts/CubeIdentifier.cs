@@ -7,6 +7,7 @@ using UnityEngine;
 public class CubeIdentifier : MonoBehaviour
 {
     public enum cubeTypes { safe, mine }
+    private const float mouseHoverCubeGrowFactor = 0.2f;
 
     [Header("--- Main Values --- ")]
     public int cubeXIndex = 0;
@@ -42,7 +43,9 @@ public class CubeIdentifier : MonoBehaviour
     /// </summary>
     private void OnMouseEnter()
     {
-
+        transform.localScale += new Vector3(mouseHoverCubeGrowFactor,
+                                            mouseHoverCubeGrowFactor,
+                                            mouseHoverCubeGrowFactor);
     }
 
     /// <summary>
@@ -50,7 +53,9 @@ public class CubeIdentifier : MonoBehaviour
     /// </summary>
     private void OnMouseExit()
     {
-
+        transform.localScale -= new Vector3(mouseHoverCubeGrowFactor,
+                                            mouseHoverCubeGrowFactor,
+                                            mouseHoverCubeGrowFactor);
     }
 
     /* ************************************************************************

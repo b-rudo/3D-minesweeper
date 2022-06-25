@@ -7,6 +7,10 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
+    private const float interCubeSpacingIncrementVal = 0.1f;
+    private const float interCubeSpacingMin = 0.1f;
+    private const float interCubeSpacingMax = 2f;
+
     // Set in inspector
     [Header("--- Prefab References --- ")]
     public GameObject basicCubePrefab;
@@ -20,7 +24,7 @@ public class GameManager : Singleton<GameManager>
 
     // Private vars
     private float cubeLengthWidthHeight = 0;
-    private float interCubeAdditionalSpacing = 0.2f;
+    private float currentInterCubeAdditionalSpacing = 0.2f;
     private int numMines;
     private bool minesHaveBeenPlanted = false;
     private GameObject mineHolder;
@@ -116,9 +120,9 @@ public class GameManager : Singleton<GameManager>
                         }
                     }
 
-                    currentSpawnX += cubeLengthWidthHeight + interCubeAdditionalSpacing;
+                    currentSpawnX += cubeLengthWidthHeight + currentInterCubeAdditionalSpacing;
                 }
-                currentSpawnZ += cubeLengthWidthHeight + interCubeAdditionalSpacing;
+                currentSpawnZ += cubeLengthWidthHeight + currentInterCubeAdditionalSpacing;
                 /* Incrementing z means we have need to reset our x to 
                  * keep everything in line */
                 currentSpawnX = originalSpawnX;
@@ -138,7 +142,7 @@ public class GameManager : Singleton<GameManager>
                  * go upwards */
                 currentSpawnX = originalSpawnX;
                 currentSpawnZ = originalSpawnZ;
-                currentSpawnY += cubeLengthWidthHeight + interCubeAdditionalSpacing;
+                currentSpawnY += cubeLengthWidthHeight + currentInterCubeAdditionalSpacing;
             }
         } 
     }
@@ -222,6 +226,32 @@ public class GameManager : Singleton<GameManager>
     {
         if (correspondingCubeGrid3DArray[xCoord, yCoord, zCoord].GetComponent<CubeIdentifier>().cubeType != CubeIdentifier.cubeTypes.mine)
             correspondingCubeGrid3DArray[xCoord, yCoord, zCoord].GetComponent<CubeIdentifier>().sidesTouchingMines += 1;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cubePos"></param>
+    /// <param name="centerCubePos"></param>
+    /// <returns></returns>
+    private float calculateCubeSpacingAwayFromCenterCube(float cubePos, float centerCubePos, char increaseOrDecrease)
+    {
+        if (cubePos > centerCubePos)
+        {
+            if (increaseOrDecrease == '+')
+                return interCubeSpacingIncrementVal;
+            else
+                return interCubeSpacingIncrementVal * -1;
+        }
+        else if (cubePos < centerCubePos)
+        {
+            if (increaseOrDecrease == '+')
+                return interCubeSpacingIncrementVal * -1;
+            else
+                return interCubeSpacingIncrementVal;
+        }
+        else
+            return 0;
     }
 
     /* ************************************************************************
@@ -349,5 +379,42 @@ public class GameManager : Singleton<GameManager>
         // Set proper flags on exit
         minesHaveBeenPlanted = true;
         InputAndCameraManager.Instance.setPlayerInputAllowed(true);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="increaseOrDecrease"></param>
+    public void modifyInterCubeSpacing(char increaseOrDecrease)
+    {
+        // Ensure we do not go past our min or max spacing bounds
+        if ((currentInterCubeAdditionalSpacing > interCubeSpacingMax && increaseOrDecrease == '+') ||
+            (currentInterCubeAdditionalSpacing < interCubeSpacingMin && increaseOrDecrease == '-'))
+            return;
+
+        // Go through each active cube to space it out from the center cube
+        foreach(GameObject cube in correspondingCubeGrid3DArray)
+        {
+            if (cube.activeSelf)
+            {
+                float additionalDistanceX = calculateCubeSpacingAwayFromCenterCube(cube.transform.localPosition.x,
+                                                                                   centerGridCube.transform.localPosition.x,
+                                                                                   increaseOrDecrease);
+                float additionalDistanceY = calculateCubeSpacingAwayFromCenterCube(cube.transform.localPosition.y,
+                                                                                   centerGridCube.transform.localPosition.y,
+                                                                                   increaseOrDecrease);
+                float additionalDistanceZ = calculateCubeSpacingAwayFromCenterCube(cube.transform.localPosition.z,
+                                                                                   centerGridCube.transform.localPosition.z,
+                                                                                   increaseOrDecrease);
+
+                cube.transform.localPosition += new Vector3(additionalDistanceX, additionalDistanceY, additionalDistanceZ);
+            }
+        }
+
+        // Make sure to update current cube spacing var
+        if (increaseOrDecrease == '+')
+            currentInterCubeAdditionalSpacing += interCubeSpacingIncrementVal;
+        else
+            currentInterCubeAdditionalSpacing -= interCubeSpacingIncrementVal;
     }
 }
