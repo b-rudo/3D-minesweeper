@@ -40,8 +40,8 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
             // All mouse clicks
             if (Input.GetMouseButtonDown(0))
                 StartCoroutine(revealCube());
-            else if (Input.GetMouseButtonDown(2))
-                placeMineMarker();
+            else if (Input.GetMouseButtonDown(1))
+                placeOrRemoveMineFlag();
 
             // Mouse scrolls
             if (Input.GetAxis("Mouse ScrollWheel") > 0f)
@@ -95,9 +95,13 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
     /// <summary>
     /// 
     /// </summary>
-    private void placeMineMarker()
+    private void placeOrRemoveMineFlag()
     {
+        GameObject cube = returnMousePosCubeIfExists();
 
+        if (!cube) return;
+
+        cube.GetComponent<CubeIdentifier>().reverseMineFlagOnOrOff();
     }
 
     /// <summary>

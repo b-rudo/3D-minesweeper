@@ -293,6 +293,7 @@ public class GameManager : Singleton<GameManager>
         if (cubeID.sidesTouchingMines == 0 && cubeID.gameObject.activeSelf)
         {
             cubeID.gameObject.SetActive(false);
+            // cubeID.totallyRemoveCube();
 
             for (int yLayer = yCoord-1; yLayer < (yCoord + 2); yLayer++)
             {

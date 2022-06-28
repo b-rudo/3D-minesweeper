@@ -13,18 +13,6 @@ public class CameraLogic : Singleton<CameraLogic>
     private float maxCameraZoomInZVal;
     private float maxCameraZoomOutZVal;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     /// <summary>
     /// 
     /// </summary>

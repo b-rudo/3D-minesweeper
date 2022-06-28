@@ -18,7 +18,9 @@ public class CubeIdentifier : MonoBehaviour
 
     [Header("--- References --- ")]
     public TextMeshPro textOfsidesTouchingMines;
+    public GameObject parentOfMineXFlags;   
     public Material transparentMat;
+    public GameObject cubeCrumblePSobj;
     /// <summary>
     /// 
     /// </summary>
@@ -73,8 +75,27 @@ public class CubeIdentifier : MonoBehaviour
         // Change our material to transparent to see the number
         GetComponent<Renderer>().material = transparentMat;
 
+        // If we were flagged make sure to turn it off
+        parentOfMineXFlags.SetActive(false);
+
         /* Also turn off our collider so players can "click through" the
          * transparency */
         GetComponent<BoxCollider>().enabled = false;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void reverseMineFlagOnOrOff()
+    {
+        parentOfMineXFlags.SetActive(!parentOfMineXFlags.activeSelf);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void totallyRemoveCube()
+    {
+        cubeCrumblePSobj.SetActive(true);
     }
 }
