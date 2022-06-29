@@ -66,13 +66,6 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     private void buildCubeGrid()
     {
-        float originalSpawnX = 1;
-        float originalSpawnY = 1;
-        float originalSpawnZ = 1;
-
-        float currentSpawnX = originalSpawnX;
-        float currentSpawnY = originalSpawnY;
-        float currentSpawnZ = originalSpawnZ;
         int currentLayer = 1;
         bool searchForMiddleCube = false;
 
@@ -81,6 +74,18 @@ public class GameManager : Singleton<GameManager>
          * towards the center */
         int gridCenterVal = (numRowsCols / 2) + 1;
         if (gridCenterVal == currentLayer) searchForMiddleCube = true;
+
+        float originalSpawnX = 1;
+        float originalSpawnY = 1;
+        float originalSpawnZ = 1;
+
+        float currentSpawnX = originalSpawnX;
+        float currentSpawnY = originalSpawnY;
+        float currentSpawnZ = originalSpawnZ;
+
+        GameObject parentOfAllCubesButMiddleCube = new GameObject();
+        parentOfAllCubesButMiddleCube.name = "Parent of all Cubes But Middle";
+        parentOfAllCubesButMiddleCube.transform.SetParent(allCubeHolder.transform);
 
         /* Start building the 3D cube grid by starting in the bottom-left,
          * front-most corner and build each horizontal layer, one on top of the
@@ -96,7 +101,6 @@ public class GameManager : Singleton<GameManager>
                 for (int j = 1; j <= numRowsCols; j++)
                 {
                     GameObject currentCube = Instantiate(basicCubePrefab, new Vector3(currentSpawnX, currentSpawnY, currentSpawnZ), Quaternion.identity);
-                    currentCube.transform.SetParent(allCubeHolder.transform);
                     // Set the cube's index and type
                     currentCube.GetComponent<CubeIdentifier>().cubeXIndex = j-1;
                     currentCube.GetComponent<CubeIdentifier>().cubeYIndex = currentLayer-1;
@@ -111,14 +115,16 @@ public class GameManager : Singleton<GameManager>
                         if (i == gridCenterVal && j == gridCenterVal)
                         {
                             centerGridCube = currentCube;
-                            currentCube.name = "MIDDLEMOST";
+                            currentCube.transform.SetParent(allCubeHolder.transform);
+                            currentCube.name = "MIDDLEMOST CUBE";
 
-                            InputAndCameraManager.Instance.setCenterCubeReference(centerGridCube);
                             DragToRotate.Instance.setCenterCubeReference(centerGridCube);
 
                             searchForMiddleCube = false;
                         }
                     }
+                    if (centerGridCube != currentCube)
+                        currentCube.transform.SetParent(parentOfAllCubesButMiddleCube.transform);
 
                     currentSpawnX += cubeLengthWidthHeight + currentInterCubeAdditionalSpacing;
                 }
@@ -144,7 +150,33 @@ public class GameManager : Singleton<GameManager>
                 currentSpawnZ = originalSpawnZ;
                 currentSpawnY += cubeLengthWidthHeight + currentInterCubeAdditionalSpacing;
             }
-        } 
+        }
+
+        /* Now that we are done, we need to move the entire cube grid such that
+         * the middlemost cube is at the origin for rotation to work correctly.
+         So... */
+
+        // ... make the middle cube the parent of the rest of the cubes...
+        parentOfAllCubesButMiddleCube.transform.SetParent(centerGridCube.transform);
+        // ... and move it to the original, taking everything with it
+        centerGridCube.transform.position = new Vector3(0, 0, 0);
+
+        InputAndCameraManager.Instance.setCenterCubeReference(centerGridCube);
+
+        // Now, we can unparent the middle cube from the rest of the cubes...
+        parentOfAllCubesButMiddleCube.transform.SetParent(allCubeHolder.transform);
+        /* ... and unparent parentOfAllCubesButMiddleCube from the rest of the
+         * cubes (necessary for cube spacing expansion) */
+        while (parentOfAllCubesButMiddleCube.transform.childCount > 0)
+        {
+            for (int i = 0; i < parentOfAllCubesButMiddleCube.transform.childCount; i++)
+            {
+                parentOfAllCubesButMiddleCube.transform.GetChild(i).SetParent(allCubeHolder.transform);
+            }
+        }
+
+        // Finally, since it is unneeded now, delete
+        Destroy(parentOfAllCubesButMiddleCube);
     }
 
     /// <summary>
