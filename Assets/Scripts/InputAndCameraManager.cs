@@ -81,7 +81,7 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
             // Check what kind of cube we just clicked
             if (cube.GetComponent<CubeIdentifier>().cubeType == CubeIdentifier.cubeTypes.mine)
             {
-                playerClickedMine();
+                GameManager.Instance.onGameLost();
             }
             else
             {
@@ -102,14 +102,6 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
         if (!cube) return;
 
         cube.GetComponent<CubeIdentifier>().reverseMineFlagOnOrOff();
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    private void playerClickedMine()
-    {
-        Debug.Log("FAIL");
     }
 
     /// <summary>

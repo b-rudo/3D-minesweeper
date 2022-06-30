@@ -1,9 +1,12 @@
 ﻿/* 8/27/2020 */
 /* B. Rudolph */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -17,16 +20,26 @@ public class GameManager : Singleton<GameManager>
 
     [Header("--- Dynamic Variables --- ")]
     public int numRowsCols = 5;
-    public float mineQuantityVal = 0.2065f;
+    public int numMines = 1;
 
     [Header("--- Obj References --- ")]
     public GameObject allCubeHolder;
 
+    [Header("--- Canvas References --- ")]
+    public GameObject mainCanvas;
+
+    public Slider numRowsColsSlider;
+    public TextMeshProUGUI numRowsColsTxt;
+
+    public Slider numMinesSlider;
+    public TextMeshProUGUI numMinesTxt;
+
     // Private vars
     private float cubeLengthWidthHeight = 0;
     private float currentInterCubeAdditionalSpacing = 0.2f;
-    private int numMines;
     private bool minesHaveBeenPlanted = false;
+    private int totalNumberCubes = 0;
+    private int numCubesRevealed = 0;
     private GameObject mineHolder;
     private GameObject centerGridCube;
     private GameObject[,,] correspondingCubeGrid3DArray;
@@ -36,29 +49,24 @@ public class GameManager : Singleton<GameManager>
     {
         // Init variables
         cubeLengthWidthHeight = basicCubePrefab.transform.localScale.x;
-        correspondingCubeGrid3DArray = new GameObject[numRowsCols, numRowsCols, numRowsCols];
 
+        // Old implementation
         /* numMines is the total number of cubes times the special mine
          * quantity val */
-        numMines = (int)((numRowsCols * numRowsCols * numRowsCols) * mineQuantityVal);
+        // numMines = (int)((numRowsCols * numRowsCols * numRowsCols) * mineQuantityVal);
 
-        // Set up our game
-        initialSetup();
+        mineHolder = new GameObject();
+        mineHolder.name = "Mine Holder";
+        mineHolder.transform.SetParent(allCubeHolder.transform);
     }
 
     /// <summary>
     /// 
     /// </summary>
-    private void initialSetup()
+    private void Start()
     {
-        mineHolder = new GameObject();
-        mineHolder.name = "Mine Holder";
-        mineHolder.transform.SetParent(allCubeHolder.transform);
-
-        buildCubeGrid();
-
-        // Once initial setup is finished, start the game
-        InputAndCameraManager.Instance.setPlayerInputAllowed(true);
+        mainCanvas.SetActive(true);
+        onNumRowsColsSliderChange();
     }
 
     /// <summary>
@@ -293,6 +301,66 @@ public class GameManager : Singleton<GameManager>
     /// <summary>
     /// 
     /// </summary>
+    public void startGame()
+    {
+        // Turn off our canvas
+        mainCanvas.SetActive(false);
+        // Update our important vals needed for building grid
+        numRowsCols = (int)numRowsColsSlider.value;
+        numMines = (int)numMinesSlider.value;
+        totalNumberCubes = (int)Math.Pow(numRowsCols, 3);
+        correspondingCubeGrid3DArray = new GameObject[numRowsCols, numRowsCols, numRowsCols];
+
+        buildCubeGrid();
+
+        // Once initial setup is finished, start the game
+        InputAndCameraManager.Instance.setPlayerInputAllowed(true);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void onGameWon()
+    {
+        Debug.Log("WON");
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void onGameLost()
+    {
+        Debug.Log("LOST");
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void onNumRowsColsSliderChange()
+    {
+        numRowsColsTxt.text = numRowsColsSlider.value.ToString();
+
+        int totalNumCubes = (int)Math.Pow(numRowsColsSlider.value, 3);
+
+        numMinesSlider.minValue = (int)totalNumCubes * 0.25f;
+        numMinesSlider.value = numMinesSlider.minValue;
+        numMinesSlider.maxValue = totalNumCubes - 1;
+
+        onNumMinesSliderChange();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void onNumMinesSliderChange()
+    {
+        numMinesTxt.text = numMinesSlider.value.ToString();
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
     /// <returns></returns>
     public int getNumRowsCols()
     {
@@ -325,6 +393,7 @@ public class GameManager : Singleton<GameManager>
         if (cubeID.sidesTouchingMines == 0 && cubeID.gameObject.activeSelf)
         {
             cubeID.gameObject.SetActive(false);
+            numCubesRevealed++;
             // cubeID.totallyRemoveCube();
 
             for (int yLayer = yCoord-1; yLayer < (yCoord + 2); yLayer++)
@@ -367,6 +436,13 @@ public class GameManager : Singleton<GameManager>
         else if (cubeID.sidesTouchingMines != 0)
         {
             cubeID.showSidesTouchingMinesText();
+            numCubesRevealed++;
+        }
+
+        // Winning Game condition
+        if (numCubesRevealed >= (totalNumberCubes - numMines))
+        {
+            onGameWon();
         }
     }
 
@@ -386,9 +462,9 @@ public class GameManager : Singleton<GameManager>
         /* Randomly assign cubes as mines until we reach the maximum */
         while (currentNumMines < numMines)
         {
-            int randomX = Random.Range(0, numRowsCols);
-            int randomY = Random.Range(0, numRowsCols);
-            int randomZ = Random.Range(0, numRowsCols);
+            int randomX = UnityEngine.Random.Range(0, numRowsCols);
+            int randomY = UnityEngine.Random.Range(0, numRowsCols);
+            int randomZ = UnityEngine.Random.Range(0, numRowsCols);
 
             /* A mine cannot be placed on the first cube that was clicked,
              * nor can we place a mine on top of an already existing mine */
