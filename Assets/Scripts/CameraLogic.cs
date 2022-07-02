@@ -16,6 +16,14 @@ public class CameraLogic : Singleton<CameraLogic>
     /// <summary>
     /// 
     /// </summary>
+    public void onReturnToMenuAfterGame()
+    {
+        transform.position += new Vector3(-3, 0, 0);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     /// <param name="centerCubeReference"></param>
     public void setStartingCameraPos(GameObject centerCubeRef)
     {
@@ -23,7 +31,7 @@ public class CameraLogic : Singleton<CameraLogic>
 
         transform.position = new Vector3(centerCubeReference.transform.position.x,
                                          centerCubeReference.transform.position.y,
-                                         transform.position.z);
+                                         -4.5f);
         transform.LookAt(centerCubeReference.transform);
 
         /* Now that our camera is in its proper starting pos, we can calculate

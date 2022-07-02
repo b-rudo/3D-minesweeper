@@ -67,9 +67,10 @@ public class CubeIdentifier : MonoBehaviour
     /// </summary>
     private void OnMouseEnter()
     {
-        transform.localScale += new Vector3(mouseHoverCubeGrowFactor,
-                                            mouseHoverCubeGrowFactor,
-                                            mouseHoverCubeGrowFactor);
+        if (InputAndCameraManager.Instance.getCanRevealOrFlagCubes())
+            transform.localScale += new Vector3(mouseHoverCubeGrowFactor,
+                                                mouseHoverCubeGrowFactor,
+                                                mouseHoverCubeGrowFactor);
     }
 
     /// <summary>
@@ -77,7 +78,8 @@ public class CubeIdentifier : MonoBehaviour
     /// </summary>
     private void OnMouseExit()
     {
-        transform.localScale -= new Vector3(mouseHoverCubeGrowFactor,
+        if (InputAndCameraManager.Instance.getCanRevealOrFlagCubes())
+            transform.localScale -= new Vector3(mouseHoverCubeGrowFactor,
                                             mouseHoverCubeGrowFactor,
                                             mouseHoverCubeGrowFactor);
     }
@@ -114,8 +116,18 @@ public class CubeIdentifier : MonoBehaviour
     /// <summary>
     /// 
     /// </summary>
-    public void reverseMineFlagOnOrOff()
+    public bool reverseMineFlagOnOrOff()
     {
         parentOfMineXFlags.SetActive(!parentOfMineXFlags.activeSelf);
+        return parentOfMineXFlags.activeSelf;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public bool getIsMineFlagged()
+    {
+        return parentOfMineXFlags.activeSelf;
     }
 }

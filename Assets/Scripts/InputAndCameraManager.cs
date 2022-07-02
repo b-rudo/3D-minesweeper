@@ -15,6 +15,7 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
     private GameObject centerCubeReference;
     private readonly float cameraZDistanceMultiplier = 1.5f;
     private bool playerInputAllowed = false;
+    private bool canRevealOrFlagCubes = false;
 
     /// <summary>
     /// 
@@ -38,10 +39,13 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
         if (playerInputAllowed)
         {
             // All mouse clicks
-            if (Input.GetMouseButtonDown(0))
-                StartCoroutine(revealCube());
-            else if (Input.GetMouseButtonDown(1))
-                placeOrRemoveMineFlag();
+            if (canRevealOrFlagCubes)
+            {
+                if (Input.GetMouseButtonDown(0))
+                    StartCoroutine(revealCube());
+                else if (Input.GetMouseButtonDown(1))
+                    placeOrRemoveMineFlag();
+            }
 
             // Mouse scrolls
             if (Input.GetAxis("Mouse ScrollWheel") > 0f)
@@ -78,15 +82,19 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
                 yield return new WaitUntil(() => GameManager.Instance.getMinesHaveBeenPlanted() == true);
             }
 
-            // Check what kind of cube we just clicked
-            if (cube.GetComponent<CubeIdentifier>().cubeType == CubeIdentifier.cubeTypes.mine)
+            // If the cube is flagged, don't do anything
+            if (!cube.GetComponent<CubeIdentifier>().getIsMineFlagged())
             {
-                GameManager.Instance.onGameLost();
-            }
-            else
-            {
-                CubeIdentifier cubeID = cube.GetComponent<CubeIdentifier>();
-                GameManager.Instance.givenCubeCoordsDeleteCloseByCubesIfSafe(cubeID.cubeXIndex, cubeID.cubeYIndex, cubeID.cubeZIndex);
+                // Check what kind of cube we just clicked
+                if (cube.GetComponent<CubeIdentifier>().cubeType == CubeIdentifier.cubeTypes.mine)
+                {
+                    GameManager.Instance.onGameLost();
+                }
+                else
+                {
+                    CubeIdentifier cubeID = cube.GetComponent<CubeIdentifier>();
+                    GameManager.Instance.givenCubeCoordsDeleteCloseByCubesIfSafe(cubeID.cubeXIndex, cubeID.cubeYIndex, cubeID.cubeZIndex);
+                }
             }
         }
 
@@ -101,7 +109,19 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
 
         if (!cube) return;
 
-        cube.GetComponent<CubeIdentifier>().reverseMineFlagOnOrOff();
+        // Check for the case of adding flag when you're out of flags
+        if (!cube.GetComponent<CubeIdentifier>().getIsMineFlagged() &&
+            GameManager.Instance.getNumberOfMineFlagsLeft() <= 0)
+        {
+            return;
+        }
+
+        bool flagOn = cube.GetComponent<CubeIdentifier>().reverseMineFlagOnOrOff();
+
+        // Update the HUD mines place text
+        int valToAdd = 1;
+        if (flagOn) valToAdd = -1;
+        GameManager.Instance.updateMinesPlacedTxt(valToAdd);
     }
 
     /// <summary>
@@ -135,6 +155,32 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
     public void setPlayerInputAllowed(bool allowed)
     {
         playerInputAllowed = allowed;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public bool getCanRevealOrFlagCubes()
+    {
+        return canRevealOrFlagCubes;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void onGameStart()
+    {
+        setPlayerInputAllowed(true);
+        canRevealOrFlagCubes = true;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void onGameEnd()
+    {
+        canRevealOrFlagCubes = false;
     }
 
     /// <summary>

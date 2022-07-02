@@ -25,7 +25,7 @@ public class GameManager : Singleton<GameManager>
     [Header("--- Obj References --- ")]
     public GameObject allCubeHolder;
 
-    [Header("--- Canvas References --- ")]
+    [Header("--- Main Canvas References --- ")]
     public GameObject mainCanvas;
 
     public Slider numRowsColsSlider;
@@ -34,12 +34,28 @@ public class GameManager : Singleton<GameManager>
     public Slider numMinesSlider;
     public TextMeshProUGUI numMinesTxt;
 
+    [Header("--- Hud Canvas References --- ")]
+    public GameObject hudCanvas;
+    public TextMeshProUGUI timerTxt;
+    public TextMeshProUGUI mineFlagsPlacedTxt;
+    public GameObject youWonTxt;
+    public GameObject youLostTxt;
+    public GameObject menuRestartBtnParent;
+
+
     // Private vars
     private float cubeLengthWidthHeight = 0;
     private float currentInterCubeAdditionalSpacing = 0.2f;
+
     private bool minesHaveBeenPlanted = false;
+
+    private int numberOfMineFlagsLeft = 0;
     private int totalNumberCubes = 0;
     private int numCubesRevealed = 0;
+
+    private bool timerIsActive = false;
+    private float currentTimerTime = 0;
+
     private GameObject mineHolder;
     private GameObject centerGridCube;
     private GameObject[,,] correspondingCubeGrid3DArray;
@@ -65,8 +81,25 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     private void Start()
     {
+        youWonTxt.SetActive(false);
+        youLostTxt.SetActive(false);
+        menuRestartBtnParent.SetActive(false);
+
+        hudCanvas.SetActive(false);
         mainCanvas.SetActive(true);
         onNumRowsColsSliderChange();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private void Update()
+    {
+        if (timerIsActive)
+        {
+            currentTimerTime += Time.deltaTime;
+            timerTxt.text = ((int)currentTimerTime).ToString();
+        }
     }
 
     /// <summary>
@@ -294,6 +327,55 @@ public class GameManager : Singleton<GameManager>
             return 0;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    private void onGameWonOrLost()
+    {
+        timerIsActive = false;
+        timerTxt.color = Color.red;
+
+        // Reset Vars
+        minesHaveBeenPlanted = false;
+
+        menuRestartBtnParent.SetActive(true);
+
+        InputAndCameraManager.Instance.onGameEnd();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator deleteOldCubeHolderAndMineHolderChildren()
+    {
+        // Remove allCubeHolder children
+        for (int i = 0; i < allCubeHolder.transform.childCount; i++)
+        {
+            if (allCubeHolder.transform.GetChild(i).gameObject != mineHolder)
+                Destroy(allCubeHolder.transform.GetChild(i).gameObject);
+        }
+
+        // Remove mineHolder children
+        for (int i = 0; i < mineHolder.transform.childCount; i++)
+        {
+            Destroy(mineHolder.transform.GetChild(i).gameObject);
+        }
+
+        yield return new WaitUntil(() => allCubeHolder.transform.childCount <= 1 && mineHolder.transform.childCount <= 0);
+
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private void turnOffAllPostWinOrFailHudElements()
+    {
+        youWonTxt.SetActive(false);
+        youLostTxt.SetActive(false);
+        menuRestartBtnParent.SetActive(false);
+    }
+
     /* ************************************************************************
      *                          PUBLIC FUNCTIONS
      * ***********************************************************************/
@@ -303,8 +385,14 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void startGame()
     {
-        // Turn off our canvas
+        // Turn off our menu canvas
         mainCanvas.SetActive(false);
+        /* Delete all the allCubeHolder's children if they exist from a
+         * previous game */
+        if (allCubeHolder.transform.childCount > 1 && mineHolder.transform.childCount >= 0)
+        {
+            StartCoroutine(deleteOldCubeHolderAndMineHolderChildren());
+        }
         // Update our important vals needed for building grid
         numRowsCols = (int)numRowsColsSlider.value;
         numMines = (int)numMinesSlider.value;
@@ -314,7 +402,53 @@ public class GameManager : Singleton<GameManager>
         buildCubeGrid();
 
         // Once initial setup is finished, start the game
-        InputAndCameraManager.Instance.setPlayerInputAllowed(true);
+        numCubesRevealed = 0;
+        currentTimerTime = 0;
+        timerIsActive = true;
+
+        numberOfMineFlagsLeft = numMines;
+        updateMinesPlacedTxt(0);
+
+        hudCanvas.SetActive(true);
+        InputAndCameraManager.Instance.onGameStart();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void onReturnToMenuBtnClick()
+    {
+        turnOffAllPostWinOrFailHudElements();
+
+        CameraLogic.Instance.onReturnToMenuAfterGame();
+
+        hudCanvas.SetActive(false);
+        mainCanvas.SetActive(true);
+    }
+
+    public void onRedoBtnClick()
+    {
+        turnOffAllPostWinOrFailHudElements();
+        startGame();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="valToAdd"></param>
+    public void updateMinesPlacedTxt(int valToAdd)
+    {
+        numberOfMineFlagsLeft += valToAdd;
+        mineFlagsPlacedTxt.text = numberOfMineFlagsLeft.ToString();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public int getNumberOfMineFlagsLeft()
+    {
+        return numberOfMineFlagsLeft;
     }
 
     /// <summary>
@@ -322,7 +456,8 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void onGameWon()
     {
-        Debug.Log("WON");
+        onGameWonOrLost();
+        youWonTxt.SetActive(true);
     }
 
     /// <summary>
@@ -330,7 +465,8 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void onGameLost()
     {
-        Debug.Log("LOST");
+        onGameWonOrLost();
+        youLostTxt.SetActive(true);
     }
 
     /// <summary>
