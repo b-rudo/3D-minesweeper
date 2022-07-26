@@ -569,7 +569,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -115, y: -85.4}
+  m_AnchoredPosition: {x: -115, y: -85.3999}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &166344353
@@ -1650,25 +1650,18 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '- On game start, for big grids, camera zoomed in too much
+  m_text: '- When trying to drag camera, registers as a click sometimes
 
-    - When
-    trying to drag camera, registers as a click sometimes
+    - On
+    first click, always make it such that you remove lot of cubes
 
-    - On first click,
-    always make it such that you remove lot of cubes
-
-    - Win/lose screens
-
-    -
-    Timer
-
-    - Cube distance expand bug
+    - Cube distance
+    expand bug
 
     - Instruction canvas
 
-    - Different
-    colors for nums higher than 8'
+    - Different colors for nums higher
+    than 8'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
@@ -2130,7 +2123,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -115, y: -36.3}
+  m_AnchoredPosition: {x: -115, y: -36.30005}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &780422442
@@ -3449,7 +3442,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 235.48016, y: -85.50006}
+  m_AnchoredPosition: {x: 235.47998, y: -85.5}
   m_SizeDelta: {x: 401.3, y: 64.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1557780286

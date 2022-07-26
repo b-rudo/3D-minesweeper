@@ -25,19 +25,23 @@ public class CameraLogic : Singleton<CameraLogic>
     /// 
     /// </summary>
     /// <param name="centerCubeReference"></param>
-    public void setStartingCameraPos(GameObject centerCubeRef)
+    public void setStartingCameraPos(GameObject centerCubeRef, int numRowsCols, float cubeLengthWidthHeight, float interCubeSpacing)
     {
         centerCubeReference = centerCubeRef;
 
+        int halfNumRowsCols = (numRowsCols / 2);
+
+        float finalZVal = centerCubeRef.transform.position.z - (halfNumRowsCols * cubeLengthWidthHeight * (interCubeSpacing * halfNumRowsCols)) - (3.5f * halfNumRowsCols);
+
         transform.position = new Vector3(centerCubeReference.transform.position.x,
                                          centerCubeReference.transform.position.y,
-                                         -4.5f);
+                                         finalZVal);
         transform.LookAt(centerCubeReference.transform);
 
         /* Now that our camera is in its proper starting pos, we can calculate
          * our max camera zoom levels */
-        maxCameraZoomInZVal = transform.position.z + 5;
-        maxCameraZoomOutZVal = transform.position.z - 15;
+        maxCameraZoomInZVal = centerCubeRef.transform.position.z - (cubeLengthWidthHeight + 2);
+        maxCameraZoomOutZVal = transform.position.z - 10;
     }
 
     /// <summary>

@@ -190,9 +190,5 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
     public void setCenterCubeReference(GameObject obj)
     {
         centerCubeReference = obj;
-
-        /* Once we have the center cube reference, we can place the camera in
-         * the correct starting position and orientation */
-        CameraLogic.Instance.setStartingCameraPos(centerCubeReference);
     }
 }

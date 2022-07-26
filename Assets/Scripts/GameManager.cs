@@ -203,6 +203,7 @@ public class GameManager : Singleton<GameManager>
         centerGridCube.transform.position = new Vector3(0, 0, 0);
 
         InputAndCameraManager.Instance.setCenterCubeReference(centerGridCube);
+        CameraLogic.Instance.setStartingCameraPos(centerGridCube, numRowsCols, cubeLengthWidthHeight, currentInterCubeAdditionalSpacing);
 
         // Now, we can unparent the middle cube from the rest of the cubes...
         parentOfAllCubesButMiddleCube.transform.SetParent(allCubeHolder.transform);
