@@ -402,6 +402,8 @@ public class GameManager : Singleton<GameManager>
         buildCubeGrid();
 
         // Once initial setup is finished, start the game
+        timerTxt.color = Color.white;
+
         numCubesRevealed = 0;
         currentTimerTime = 0;
         timerIsActive = true;
