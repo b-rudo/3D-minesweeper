@@ -23,6 +23,7 @@ public class CubeIdentifier : MonoBehaviour
     public GameObject parentOfMineXFlags;   
     public Material transparentMat;
     public GameObject cubeCrumblePSobj;
+    public GameObject mineObject;
 
     IDictionary<int, Color> sidesTouchingMinesColorDict = new Dictionary<int, Color>();
 
@@ -41,6 +42,8 @@ public class CubeIdentifier : MonoBehaviour
         sidesTouchingMinesColorDict.Add(8, new Color(123, 123, 123));
 
         // FIXME - Colors through 26!!
+
+        mineObject.SetActive(false);
     }
 
     /// <summary>
@@ -87,6 +90,19 @@ public class CubeIdentifier : MonoBehaviour
     /* ************************************************************************
      *                          PUBLIC FUNCTIONS
      * ***********************************************************************/
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void revealMine()
+    {
+        if (cubeType != cubeTypes.mine) return;
+
+        mineObject.SetActive(true);
+
+        // Change our material to transparent to see the number
+        GetComponent<Renderer>().material = transparentMat;
+    }
 
     /// <summary>
     /// 

@@ -14,6 +14,13 @@ public class GameManager : Singleton<GameManager>
     private const float interCubeSpacingMin = 0.1f;
     private const float interCubeSpacingMax = 2f;
 
+    private const float easyPercentageOfMinesInGrid = 12f;
+    private const float medPercentageOfMinesInGrid = 15.5f;
+    private const float hardPercentageOfMinesInGrid = 20.5f;
+    private const float expertPercentageOfMinesInGrid = 25f;
+
+    private IDictionary<int, float> difficultyToGridMinePercentage = new Dictionary<int, float>();
+
     // Set in inspector
     [Header("--- Prefab References --- ")]
     public GameObject basicCubePrefab;
@@ -28,11 +35,11 @@ public class GameManager : Singleton<GameManager>
     [Header("--- Main Canvas References --- ")]
     public GameObject mainCanvas;
 
+    public TMP_Dropdown gameDifficultyDropDown;
+    public Toggle cheatModeToggle;
+
     public Slider numRowsColsSlider;
     public TextMeshProUGUI numRowsColsTxt;
-
-    public Slider numMinesSlider;
-    public TextMeshProUGUI numMinesTxt;
 
     [Header("--- Hud Canvas References --- ")]
     public GameObject hudCanvas;
@@ -47,6 +54,7 @@ public class GameManager : Singleton<GameManager>
     private float cubeLengthWidthHeight = 0;
     private float currentInterCubeAdditionalSpacing = 0.2f;
 
+    private bool inCheatMode = false;
     private bool minesHaveBeenPlanted = false;
 
     private int numberOfMineFlagsLeft = 0;
@@ -66,10 +74,11 @@ public class GameManager : Singleton<GameManager>
         // Init variables
         cubeLengthWidthHeight = basicCubePrefab.transform.localScale.x;
 
-        // Old implementation
-        /* numMines is the total number of cubes times the special mine
-         * quantity val */
-        // numMines = (int)((numRowsCols * numRowsCols * numRowsCols) * mineQuantityVal);
+        // Easy = 0, Medium = 1, Hard = 2, Expert = 3
+        difficultyToGridMinePercentage.Add(0, easyPercentageOfMinesInGrid);
+        difficultyToGridMinePercentage.Add(1, medPercentageOfMinesInGrid);
+        difficultyToGridMinePercentage.Add(2, hardPercentageOfMinesInGrid);
+        difficultyToGridMinePercentage.Add(3, expertPercentageOfMinesInGrid);
 
         mineHolder = new GameObject();
         mineHolder.name = "Mine Holder";
@@ -325,7 +334,20 @@ public class GameManager : Singleton<GameManager>
                 return interCubeSpacingIncrementVal;
         }
         else
+        {
             return 0;
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private void revealAllMines()
+    {
+        for(int i = 0; i < mineHolder.transform.childCount; i++)
+        {
+            mineHolder.transform.GetChild(i).GetComponent<CubeIdentifier>().revealMine();
+        }
     }
 
     /// <summary>
@@ -335,6 +357,9 @@ public class GameManager : Singleton<GameManager>
     {
         timerIsActive = false;
         timerTxt.color = Color.red;
+
+        // Make sure to reveal all the mines
+        revealAllMines();
 
         // Reset Vars
         minesHaveBeenPlanted = false;
@@ -377,6 +402,21 @@ public class GameManager : Singleton<GameManager>
         menuRestartBtnParent.SetActive(false);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    private int determineNumMines()
+    {
+        float minePercentageVal = difficultyToGridMinePercentage[gameDifficultyDropDown.value];
+
+        float minePercentageValForMultiply = minePercentageVal * .01f;
+        float numMinesInGridRaw = totalNumberCubes * minePercentageValForMultiply;
+
+        // Make sure we round our final val and convert to int before return
+        return (int)(Math.Round(numMinesInGridRaw, MidpointRounding.AwayFromZero));
+    }
+
     /* ************************************************************************
      *                          PUBLIC FUNCTIONS
      * ***********************************************************************/
@@ -394,10 +434,14 @@ public class GameManager : Singleton<GameManager>
         {
             StartCoroutine(deleteOldCubeHolderAndMineHolderChildren());
         }
+
+        inCheatMode = cheatModeToggle.isOn;
+
         // Update our important vals needed for building grid
         numRowsCols = (int)numRowsColsSlider.value;
-        numMines = (int)numMinesSlider.value;
         totalNumberCubes = (int)Math.Pow(numRowsCols, 3);
+
+        numMines = determineNumMines();
         correspondingCubeGrid3DArray = new GameObject[numRowsCols, numRowsCols, numRowsCols];
 
         buildCubeGrid();
@@ -478,24 +522,7 @@ public class GameManager : Singleton<GameManager>
     public void onNumRowsColsSliderChange()
     {
         numRowsColsTxt.text = numRowsColsSlider.value.ToString();
-
-        int totalNumCubes = (int)Math.Pow(numRowsColsSlider.value, 3);
-
-        numMinesSlider.minValue = (int)totalNumCubes * 0.25f;
-        numMinesSlider.value = numMinesSlider.minValue;
-        numMinesSlider.maxValue = totalNumCubes - 1;
-
-        onNumMinesSliderChange();
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public void onNumMinesSliderChange()
-    {
-        numMinesTxt.text = numMinesSlider.value.ToString();
-    }
-
 
     /// <summary>
     /// 
@@ -598,6 +625,18 @@ public class GameManager : Singleton<GameManager>
         int firstClickedCubeZ = firstCubeThatWasClicked.GetComponent<CubeIdentifier>().cubeZIndex;
 
         int currentNumMines = 0;
+
+        /* To make the game more fair, the first cube you click should "open
+         * up" the grid some. I.e., if the first cube you click only gives
+         * you the num of mines it's touching and nothing else regarding the
+         * neighbording cubes, it impossible to proceed without making random
+         * clicks for more information (and at that point, that can hit a mine)*/
+
+        int totalNumMinelessCubes = totalNumberCubes - numMines;
+
+        /* ******************************************************** */
+        /* **** OLD IMPLEMENTATION w/o Aforementioned Fairness **** */
+        /* ******************************************************** */
         /* Randomly assign cubes as mines until we reach the maximum */
         while (currentNumMines < numMines)
         {
@@ -623,10 +662,13 @@ public class GameManager : Singleton<GameManager>
                 givenMineCoordsUpdateAllContactingCubes(randomX, randomY, randomZ);
             }
         }
-        
+
         // Set proper flags on exit
         minesHaveBeenPlanted = true;
         InputAndCameraManager.Instance.setPlayerInputAllowed(true);
+
+        if (inCheatMode)
+            revealAllMines();
     }
 
     /// <summary>
