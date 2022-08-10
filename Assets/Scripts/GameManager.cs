@@ -49,6 +49,10 @@ public class GameManager : Singleton<GameManager>
     public GameObject youLostTxt;
     public GameObject menuRestartBtnParent;
 
+    [Header("--- Other --- ")]
+    public Color32 primaryColor;
+
+
 
     // Private vars
     private float cubeLengthWidthHeight = 0;
@@ -447,7 +451,7 @@ public class GameManager : Singleton<GameManager>
         buildCubeGrid();
 
         // Once initial setup is finished, start the game
-        timerTxt.color = Color.white;
+        timerTxt.color = primaryColor;
 
         numCubesRevealed = 0;
         currentTimerTime = 0;
@@ -458,6 +462,14 @@ public class GameManager : Singleton<GameManager>
 
         hudCanvas.SetActive(true);
         InputAndCameraManager.Instance.onGameStart();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void onQuestionMarkBtnClick()
+    {
+        Debug.Log("yoink");
     }
 
     /// <summary>
