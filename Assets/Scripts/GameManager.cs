@@ -10,6 +10,8 @@ using UnityEngine.UI;
 
 public class GameManager : Singleton<GameManager>
 {
+    public enum theme { blueGreen }
+
     private const float interCubeSpacingIncrementVal = 0.1f;
     private const float interCubeSpacingMin = 0.1f;
     private const float interCubeSpacingMax = 2f;
@@ -48,16 +50,25 @@ public class GameManager : Singleton<GameManager>
     public GameObject youWonTxt;
     public GameObject youLostTxt;
     public GameObject menuRestartBtnParent;
+    public List<GameObject> allInstructionElements;
 
-    [Header("--- Other --- ")]
-    public Color32 primaryColor;
+    [Header("--- Themes --- ")]
+    public List<GameObject> allObjsWithThemedText;
+
+    [Header("--- BlueGreen Theme --- ")]
+    public Material blueGreenSkybox;
+    private Color32 blueGreenThemeColor = new Color32(141, 255, 129, 255);
 
 
 
     // Private vars
+    private theme currentTheme;
+    private Color32 currentThemeColor;
+
     private float cubeLengthWidthHeight = 0;
     private float currentInterCubeAdditionalSpacing = 0.2f;
 
+    private bool instructionInfoVisible = false;
     private bool inCheatMode = false;
     private bool minesHaveBeenPlanted = false;
 
@@ -77,6 +88,7 @@ public class GameManager : Singleton<GameManager>
     {
         // Init variables
         cubeLengthWidthHeight = basicCubePrefab.transform.localScale.x;
+        currentTheme = theme.blueGreen;
 
         // Easy = 0, Medium = 1, Hard = 2, Expert = 3
         difficultyToGridMinePercentage.Add(0, easyPercentageOfMinesInGrid);
@@ -94,10 +106,13 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     private void Start()
     {
+        updateTheme();
+
         youWonTxt.SetActive(false);
         youLostTxt.SetActive(false);
         menuRestartBtnParent.SetActive(false);
 
+        toggleInstructionElementsVisibility();
         hudCanvas.SetActive(false);
         mainCanvas.SetActive(true);
         onNumRowsColsSliderChange();
@@ -112,6 +127,69 @@ public class GameManager : Singleton<GameManager>
         {
             currentTimerTime += Time.deltaTime;
             timerTxt.text = ((int)currentTimerTime).ToString();
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private void updateTheme()
+    {
+        Material skyboxMat;
+
+        switch(currentTheme)
+        {
+            default:
+            case theme.blueGreen:
+                currentThemeColor = blueGreenThemeColor;
+                skyboxMat = blueGreenSkybox;
+                break;
+        }
+
+        // Update skybox
+        RenderSettings.skybox = skyboxMat;
+
+        // Update each UI element that uses the theme color
+        foreach (GameObject obj in allObjsWithThemedText)
+        {
+            if (obj.GetComponent<TextMeshProUGUI>())
+            {
+                obj.GetComponent<TextMeshProUGUI>().color = currentThemeColor;
+            }
+            else if (obj.GetComponent<Button>())
+            {
+                ColorBlock themeColorBlock = new ColorBlock();
+
+                themeColorBlock.colorMultiplier = 1;
+                themeColorBlock.normalColor = currentThemeColor;
+                themeColorBlock.selectedColor = currentThemeColor;
+                themeColorBlock.disabledColor = new Color32((byte)(currentThemeColor.r * 0.1f),
+                                                            (byte)(currentThemeColor.g * 0.1f),
+                                                            (byte)(currentThemeColor.b * 0.1f),
+                                                            currentThemeColor.a);
+                themeColorBlock.pressedColor = new Color32((byte)(currentThemeColor.r * 0.25f),
+                                                           (byte)(currentThemeColor.g * 0.25f),
+                                                           (byte)(currentThemeColor.b * 0.25f),
+                                                           currentThemeColor.a);
+                themeColorBlock.highlightedColor = new Color32((byte)(currentThemeColor.r + (255 - currentThemeColor.r) * 0.25f),
+                                                               (byte)(currentThemeColor.g + (255 - currentThemeColor.g) * 0.25f),
+                                                               (byte)(currentThemeColor.b + (255 - currentThemeColor.b) * 0.25f),
+                                                               currentThemeColor.a);
+
+                obj.GetComponent<Button>().colors = themeColorBlock;
+                Debug.Log("YT");
+            }
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private void toggleInstructionElementsVisibility()
+    {
+        foreach (GameObject obj in allInstructionElements)
+        {
+            obj.SetActive(instructionInfoVisible);
         }
     }
 
@@ -451,7 +529,7 @@ public class GameManager : Singleton<GameManager>
         buildCubeGrid();
 
         // Once initial setup is finished, start the game
-        timerTxt.color = primaryColor;
+        timerTxt.color = currentThemeColor;
 
         numCubesRevealed = 0;
         currentTimerTime = 0;
@@ -469,7 +547,8 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void onQuestionMarkBtnClick()
     {
-        Debug.Log("yoink");
+        instructionInfoVisible = !instructionInfoVisible;
+        toggleInstructionElementsVisibility();
     }
 
     /// <summary>
@@ -689,34 +768,34 @@ public class GameManager : Singleton<GameManager>
     /// <param name="increaseOrDecrease"></param>
     public void modifyInterCubeSpacing(char increaseOrDecrease)
     {
-        // Ensure we do not go past our min or max spacing bounds
-        if ((currentInterCubeAdditionalSpacing > interCubeSpacingMax && increaseOrDecrease == '+') ||
-            (currentInterCubeAdditionalSpacing < interCubeSpacingMin && increaseOrDecrease == '-'))
-            return;
+        //// Ensure we do not go past our min or max spacing bounds
+        //if ((currentInterCubeAdditionalSpacing > interCubeSpacingMax && increaseOrDecrease == '+') ||
+        //    (currentInterCubeAdditionalSpacing < interCubeSpacingMin && increaseOrDecrease == '-'))
+        //    return;
 
-        // Go through each active cube to space it out from the center cube
-        foreach(GameObject cube in correspondingCubeGrid3DArray)
-        {
-            if (cube.activeSelf)
-            {
-                float additionalDistanceX = calculateCubeSpacingAwayFromCenterCube(cube.transform.localPosition.x,
-                                                                                   centerGridCube.transform.localPosition.x,
-                                                                                   increaseOrDecrease);
-                float additionalDistanceY = calculateCubeSpacingAwayFromCenterCube(cube.transform.localPosition.y,
-                                                                                   centerGridCube.transform.localPosition.y,
-                                                                                   increaseOrDecrease);
-                float additionalDistanceZ = calculateCubeSpacingAwayFromCenterCube(cube.transform.localPosition.z,
-                                                                                   centerGridCube.transform.localPosition.z,
-                                                                                   increaseOrDecrease);
+        //// Go through each active cube to space it out from the center cube
+        //foreach(GameObject cube in correspondingCubeGrid3DArray)
+        //{
+        //    if (cube.activeSelf)
+        //    {
+        //        float additionalDistanceX = calculateCubeSpacingAwayFromCenterCube(cube.transform.localPosition.x,
+        //                                                                           centerGridCube.transform.localPosition.x,
+        //                                                                           increaseOrDecrease);
+        //        float additionalDistanceY = calculateCubeSpacingAwayFromCenterCube(cube.transform.localPosition.y,
+        //                                                                           centerGridCube.transform.localPosition.y,
+        //                                                                           increaseOrDecrease);
+        //        float additionalDistanceZ = calculateCubeSpacingAwayFromCenterCube(cube.transform.localPosition.z,
+        //                                                                           centerGridCube.transform.localPosition.z,
+        //                                                                           increaseOrDecrease);
 
-                cube.transform.localPosition += new Vector3(additionalDistanceX, additionalDistanceY, additionalDistanceZ);
-            }
-        }
+        //        cube.transform.localPosition += new Vector3(additionalDistanceX, additionalDistanceY, additionalDistanceZ);
+        //    }
+        //}
 
-        // Make sure to update current cube spacing var
-        if (increaseOrDecrease == '+')
-            currentInterCubeAdditionalSpacing += interCubeSpacingIncrementVal;
-        else
-            currentInterCubeAdditionalSpacing -= interCubeSpacingIncrementVal;
+        //// Make sure to update current cube spacing var
+        //if (increaseOrDecrease == '+')
+        //    currentInterCubeAdditionalSpacing += interCubeSpacingIncrementVal;
+        //else
+        //    currentInterCubeAdditionalSpacing -= interCubeSpacingIncrementVal;
     }
 }
