@@ -11,11 +11,11 @@ public class CubeIdentifier : MonoBehaviour
     private const float mouseHoverCubeGrowFactor = 0.2f;
 
     [Header("--- Main Values --- ")]
-    public int test = 0;
     public int cubeXIndex = 0;
     public int cubeYIndex = 0;
     public int cubeZIndex = 0;
     public int sidesTouchingMines = 0;
+    public bool permanentlyMineless = false;
     public cubeTypes cubeType;
 
     [Header("--- References --- ")]

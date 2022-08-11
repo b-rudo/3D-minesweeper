@@ -639,6 +639,7 @@ public class GameManager : Singleton<GameManager>
         // Pause/unpause the game
         timerIsActive = !instructionInfoVisible;
         InputAndCameraManager.Instance.setPlayerInputAllowed(!instructionInfoVisible);
+        InputAndCameraManager.Instance.setCanRevealOrFlagCubes(!instructionInfoVisible);
 
         /* When paused, rotate the camera away so the player cannot continue
          * looking at the cube and "cheat" while the timer isn't ticking */
@@ -809,6 +810,9 @@ public class GameManager : Singleton<GameManager>
         int firstClickedCubeY = firstCubeThatWasClicked.GetComponent<CubeIdentifier>().cubeYIndex;
         int firstClickedCubeZ = firstCubeThatWasClicked.GetComponent<CubeIdentifier>().cubeZIndex;
 
+        // The first-clicked cube always has to be permanently mineless
+        correspondingCubeGrid3DArray[firstClickedCubeX, firstClickedCubeY, firstClickedCubeZ].gameObject.GetComponent<CubeIdentifier>().permanentlyMineless = true;
+
         int currentNumMines = 0;
 
         /* To make the game more fair, the first cube you click should "open
@@ -817,7 +821,38 @@ public class GameManager : Singleton<GameManager>
          * neighbording cubes, it impossible to proceed without making random
          * clicks for more information (and at that point, that can hit a mine)*/
 
-        int totalNumMinelessCubes = totalNumberCubes - numMines;
+        //int totalNumMinelessCubes = totalNumberCubes - numMines;
+        //int numMinesAroundFirstClickedToBeMineless = (int)(totalNumMinelessCubes / 2);
+        //int currentMarkedMineless = 0;
+
+        //// Debug.Log(numMinesAroundFirstClickedToBeMineless + ", " + totalNumMinelessCubes);
+        //Debug.Log(firstClickedCubeX + ", " + firstClickedCubeY + ", " + firstClickedCubeZ);
+
+        //int[] currentTracingVals = new int[3];
+        //currentTracingVals[0] = firstClickedCubeX;
+        //currentTracingVals[1] = firstClickedCubeY;
+        //currentTracingVals[2] = firstClickedCubeZ;
+
+        //while (currentMarkedMineless <= numMinesAroundFirstClickedToBeMineless)
+        //{
+
+        //    for(int i = 0; i < 3; i++)
+        //    {
+        //        int randNum = UnityEngine.Random.Range(0, 3);
+
+        //        if (randNum == 0 && (currentTracingVals[i] < (numRowsCols - 1)))
+        //            currentTracingVals[i]++;
+        //        else if (randNum == 1 && (currentTracingVals[i] > 0))
+        //            currentTracingVals[i]--;
+        //    }
+
+
+        //    if (correspondingCubeGrid3DArray[currentTracingVals[0], currentTracingVals[1], currentTracingVals[2]].gameObject)
+        //    {
+        //        correspondingCubeGrid3DArray[currentTracingVals[0], currentTracingVals[1], currentTracingVals[2]].gameObject.GetComponent<CubeIdentifier>().permanentlyMineless = true;
+        //        currentMarkedMineless++;
+        //    }
+        //}
 
         /* ******************************************************** */
         /* **** OLD IMPLEMENTATION w/o Aforementioned Fairness **** */
@@ -829,10 +864,9 @@ public class GameManager : Singleton<GameManager>
             int randomY = UnityEngine.Random.Range(0, numRowsCols);
             int randomZ = UnityEngine.Random.Range(0, numRowsCols);
 
-            /* A mine cannot be placed on the first cube that was clicked,
-             * nor can we place a mine on top of an already existing mine */
+            /* A mine cannot be placed on top of an already existing mine */
             if (
-                (!(randomX == firstClickedCubeX && randomY == firstClickedCubeY && randomZ == firstClickedCubeZ)) &&
+                (!(correspondingCubeGrid3DArray[randomX, randomY, randomZ].gameObject.GetComponent<CubeIdentifier>().permanentlyMineless)) &&
                 (correspondingCubeGrid3DArray[randomX, randomY, randomZ].gameObject.GetComponent<CubeIdentifier>().cubeType != CubeIdentifier.cubeTypes.mine)
                )
             {

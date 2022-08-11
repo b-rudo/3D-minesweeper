@@ -169,6 +169,15 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
     /// <summary>
     /// 
     /// </summary>
+    /// <param name="canReveal"></param>
+    public void setCanRevealOrFlagCubes(bool canReveal)
+    {
+        canRevealOrFlagCubes = canReveal;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     /// <returns></returns>
     public bool getCanRevealOrFlagCubes()
     {
