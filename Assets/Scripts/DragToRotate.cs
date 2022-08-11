@@ -10,8 +10,8 @@ public class DragToRotate : Singleton<DragToRotate>
     [Header("*** MUST BE ATTACHED TO CUBE GRID HOLDER PARENT")]
 
     public float distance = 2.0f;
-    public float xSpeed = 20.0f;
-    public float ySpeed = 20.0f;
+    public float xSpeed = 30.0f;
+    public float ySpeed = 30.0f;
     public float yMinLimit = -90f;
     public float yMaxLimit = 90f;
     public float distanceMin = 10f;

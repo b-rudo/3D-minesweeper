@@ -2592,7 +2592,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -215, y: -189}
+  m_AnchoredPosition: {x: -206, y: -189}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &541069654
@@ -2698,8 +2698,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distance: 2
-  xSpeed: 20
-  ySpeed: 20
+  xSpeed: 80
+  ySpeed: 80
   yMinLimit: -90
   yMaxLimit: 90
   distanceMin: 10
@@ -3952,16 +3952,16 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Goal: Locate all mines in the cube of cubes.
+  m_text: 'Goal: Remove all non-mine cubes.
 
 
-    Click on a cube with
-    a mine inside and it''s game over.
+    Click on a cube with a mine inside
+    and it''s game over.
 
 
-    Click on a non-mine cube to possibly
-    get a number [1-26], which reveals how many surrounding mine cubes it is touching
-    (including immediate diagonals and in the layers immediately above and below).
+    Click on a non-mine cube to possibly get a number
+    [1-26], which reveals how many surrounding mine cubes it is touching (including
+    immediate diagonals and in the layers immediately above and below).
 
 
     Use
@@ -4034,10 +4034,10 @@ MonoBehaviour:
   m_margin: {x: -162.15985, y: 0, z: -170.05278, w: -226.4086}
   m_textInfo:
     textComponent: {fileID: 941024319}
-    characterCount: 371
+    characterCount: 359
     spriteCount: 0
-    spaceCount: 66
-    wordCount: 64
+    spaceCount: 62
+    wordCount: 60
     linkCount: 0
     lineCount: 11
     pageCount: 1
@@ -5030,7 +5030,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 231, y: -101}
+  m_AnchoredPosition: {x: 224, y: -101}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1220585543
@@ -6262,7 +6262,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 3D Minesweeper
+  m_text: Celestial Minesweeper 3D
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -6290,14 +6290,14 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 53.5
+  m_fontSize: 34.5
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_textAlignment: 258
+  m_textAlignment: 514
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -6331,10 +6331,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1557780286}
-    characterCount: 14
+    characterCount: 24
     spriteCount: 0
-    spaceCount: 1
-    wordCount: 2
+    spaceCount: 2
+    wordCount: 3
     linkCount: 0
     lineCount: 1
     pageCount: 1
@@ -7174,7 +7174,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -10.100037, y: -188.6}
+  m_AnchoredPosition: {x: -1.1000366, y: -189.2}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1901840265
@@ -8189,7 +8189,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 674, y: -179}
+  m_AnchoredPosition: {x: 681, y: -179}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2076469702
