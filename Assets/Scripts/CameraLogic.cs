@@ -60,13 +60,11 @@ public class CameraLogic : Singleton<CameraLogic>
     /// 
     /// </summary>
     /// <param name="centerCubeReference"></param>
-    public void setStartingCameraPos(GameObject centerCubeRef, int numRowsCols, float cubeLengthWidthHeight, float interCubeSpacing)
+    public void setStartingCameraPos(GameObject centerCubeRef, int numRowsCols, float cubeLengthWidthHeight)
     {
         centerCubeReference = centerCubeRef;
 
-        int halfNumRowsCols = (numRowsCols / 2);
-
-        float finalZVal = centerCubeRef.transform.position.z - (halfNumRowsCols * cubeLengthWidthHeight * (interCubeSpacing * halfNumRowsCols)) - (3.5f * halfNumRowsCols);
+        float finalZVal = centerCubeRef.transform.position.z - (((numRowsCols - 3) * 2) + 8);
 
         transform.position = new Vector3(centerCubeReference.transform.position.x,
                                          centerCubeReference.transform.position.y,

@@ -19,6 +19,9 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
     private bool playerInputAllowed = false;
     private bool canRevealOrFlagCubes = false;
 
+    private float downClickTime;
+    private const float clickDeltaTime = 0.2f;
+
     /// <summary>
     /// 
     /// </summary>
@@ -43,9 +46,21 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
             // All mouse clicks
             if (canRevealOrFlagCubes)
             {
+                /* The below, more complicated implementation is necessary to
+                 * avoid the case wherein players click to rotate the cube and
+                 * the game interprets it as a regular mouse click to reveal a
+                 * cube */
                 if (Input.GetMouseButtonDown(0))
-                    StartCoroutine(revealCube());
-                else if (Input.GetMouseButtonDown(1))
+                    downClickTime = Time.time;
+                if (Input.GetMouseButtonUp(0))
+                {
+                    if (Time.time - downClickTime <= clickDeltaTime)
+                    {
+                        StartCoroutine(revealCube());
+                    }
+                }
+
+                if (Input.GetMouseButtonDown(1))
                     placeOrRemoveMineFlag();
             }
 

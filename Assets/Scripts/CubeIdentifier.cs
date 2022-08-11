@@ -95,7 +95,7 @@ public class CubeIdentifier : MonoBehaviour
     /// <summary>
     /// 
     /// </summary>
-    public void revealMine()
+    public void revealMine(bool hideTransparency)
     {
         if (cubeType != cubeTypes.mine) return;
 
@@ -103,6 +103,7 @@ public class CubeIdentifier : MonoBehaviour
 
         // Change our material to transparent to see the number
         GetComponent<Renderer>().material = transparentMat;
+        if (hideTransparency) GetComponent<Renderer>().enabled = false;
     }
 
     /// <summary>

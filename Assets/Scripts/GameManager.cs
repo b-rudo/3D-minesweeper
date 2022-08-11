@@ -101,8 +101,10 @@ public class GameManager : Singleton<GameManager>
     private GameObject[,,] correspondingCubeGrid3DArray;
 
     private bool hasEnteredOnGameWonFunc = false;
-    private bool revealedCubesFullyHidden = false;
+    private bool revealedCubesFullyHidden = true;
+    private bool inGameWonOrLostState = false;
     private List<GameObject> allRevealedCubesWithNumList;
+    private List<GameObject> allMineCubesList;
 
     // Start is called before the first frame update
     private void Awake()
@@ -110,6 +112,7 @@ public class GameManager : Singleton<GameManager>
         // Init variables
         cubeLengthWidthHeight = basicCubePrefab.transform.localScale.x;
         allRevealedCubesWithNumList = new List<GameObject>();
+        allMineCubesList = new List<GameObject>();
 
         // Create our enum theme string list and randomly set a theme
         themeEnumStringList = Enum.GetNames(typeof(theme)).ToList();
@@ -339,7 +342,7 @@ public class GameManager : Singleton<GameManager>
         centerGridCube.transform.position = new Vector3(0, 0, 0);
 
         InputAndCameraManager.Instance.setCenterCubeReference(centerGridCube);
-        CameraLogic.Instance.setStartingCameraPos(centerGridCube, numRowsCols, cubeLengthWidthHeight, currentInterCubeAdditionalSpacing);
+        CameraLogic.Instance.setStartingCameraPos(centerGridCube, numRowsCols, cubeLengthWidthHeight);
 
         // Now, we can unparent the middle cube from the rest of the cubes...
         parentOfAllCubesButMiddleCube.transform.SetParent(allCubeHolder.transform);
@@ -473,7 +476,7 @@ public class GameManager : Singleton<GameManager>
     {
         for(int i = 0; i < mineHolder.transform.childCount; i++)
         {
-            mineHolder.transform.GetChild(i).GetComponent<CubeIdentifier>().revealMine();
+            mineHolder.transform.GetChild(i).GetComponent<CubeIdentifier>().revealMine(revealedCubesFullyHidden);
         }
     }
 
@@ -483,6 +486,8 @@ public class GameManager : Singleton<GameManager>
     private void onGameWonOrLost()
     {
         pauseBtn.SetActive(false);
+
+        inGameWonOrLostState = true;
 
         timerIsActive = false;
         timerTxt.color = Color.red;
@@ -584,6 +589,9 @@ public class GameManager : Singleton<GameManager>
         pauseBtn.SetActive(true);
 
         allRevealedCubesWithNumList.Clear();
+        allMineCubesList.Clear();
+
+        inGameWonOrLostState = false;
 
         /* Delete all the allCubeHolder's children if they exist from a
          * previous game */
@@ -639,8 +647,11 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void onQuestionMarkBtnClick()
     {
-        // Do nothing if camera currently rotating or the main menu is open
-        if (CameraLogic.Instance.getCameraCurrentlyRotating() || mainCanvas.activeSelf)
+        /* Do nothing if camera currently rotating or the main menu is open or
+         * we are currently in the win/lost state*/
+        if (CameraLogic.Instance.getCameraCurrentlyRotating() || 
+            mainCanvas.activeSelf ||
+            inGameWonOrLostState)
             return;
 
         instructionInfoVisible = !instructionInfoVisible;
@@ -889,6 +900,8 @@ public class GameManager : Singleton<GameManager>
                 newMine.GetComponent<CubeIdentifier>().cubeType = CubeIdentifier.cubeTypes.mine;
                 newMine.transform.SetParent(mineHolder.transform);
 
+                allMineCubesList.Add(newMine);
+
                 currentNumMines += 1;
 
                 /* Now, we need to go through each cube that this newly-placed
@@ -913,7 +926,15 @@ public class GameManager : Singleton<GameManager>
         if (allRevealedCubesWithNumList.Count <= 0) return;
 
         revealedCubesFullyHidden = !revealedCubesFullyHidden;
+
         foreach(GameObject cube in allRevealedCubesWithNumList)
+        {
+            cube.GetComponent<CubeIdentifier>().toggleRevealedCubeWithNumTransparency();
+        }
+
+        if (allMineCubesList.Count <= 0 || (!inCheatMode && !inGameWonOrLostState)) return;
+
+        foreach (GameObject cube in allMineCubesList)
         {
             cube.GetComponent<CubeIdentifier>().toggleRevealedCubeWithNumTransparency();
         }
