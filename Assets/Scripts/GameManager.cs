@@ -100,11 +100,16 @@ public class GameManager : Singleton<GameManager>
     private GameObject centerGridCube;
     private GameObject[,,] correspondingCubeGrid3DArray;
 
+    private bool hasEnteredOnGameWonFunc = false;
+    private bool revealedCubesFullyHidden = false;
+    private List<GameObject> allRevealedCubesWithNumList;
+
     // Start is called before the first frame update
     private void Awake()
     {
         // Init variables
         cubeLengthWidthHeight = basicCubePrefab.transform.localScale.x;
+        allRevealedCubesWithNumList = new List<GameObject>();
 
         // Create our enum theme string list and randomly set a theme
         themeEnumStringList = Enum.GetNames(typeof(theme)).ToList();
@@ -577,6 +582,9 @@ public class GameManager : Singleton<GameManager>
         mainCanvas.SetActive(false);
 
         pauseBtn.SetActive(true);
+
+        allRevealedCubesWithNumList.Clear();
+
         /* Delete all the allCubeHolder's children if they exist from a
          * previous game */
         if (allCubeHolder.transform.childCount > 1 && mineHolder.transform.childCount >= 0)
@@ -598,6 +606,7 @@ public class GameManager : Singleton<GameManager>
         // Once initial setup is finished, start the game
         timerTxt.color = currentThemeColor;
 
+        hasEnteredOnGameWonFunc = false;
         numCubesRevealed = 0;
         currentTimerTime = 0;
         timerIsActive = true;
@@ -630,8 +639,9 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void onQuestionMarkBtnClick()
     {
-        // Do nothing if camera currently rotating
-        if (CameraLogic.Instance.getCameraCurrentlyRotating()) return;
+        // Do nothing if camera currently rotating or the main menu is open
+        if (CameraLogic.Instance.getCameraCurrentlyRotating() || mainCanvas.activeSelf)
+            return;
 
         instructionInfoVisible = !instructionInfoVisible;
         toggleInstructionElementsVisibility();
@@ -689,6 +699,10 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void onGameWon()
     {
+        if (hasEnteredOnGameWonFunc) return;
+
+        Debug.Log("Revealed " + numCubesRevealed + " out of " + totalNumberCubes + " total with " + numMines + " mines");
+        hasEnteredOnGameWonFunc = true;
         onGameWonOrLost();
         youWonTxt.SetActive(true);
     }
@@ -742,17 +756,17 @@ public class GameManager : Singleton<GameManager>
         if (cubeID.cubeType == CubeIdentifier.cubeTypes.mine)
             return;
 
-        if (cubeID.sidesTouchingMines == 0 && cubeID.gameObject.activeSelf)
+        if (cubeID.sidesTouchingMines == 0 && !(cubeID.GetComponent<CubeIdentifier>().hasBeenRevealed))
         {
             cubeID.gameObject.SetActive(false);
+            cubeID.GetComponent<CubeIdentifier>().hasBeenRevealed = true;
             numCubesRevealed++;
             // cubeID.totallyRemoveCube();
 
-            for (int yLayer = yCoord-1; yLayer < (yCoord + 2); yLayer++)
+            for (int yLayer = yCoord-1; yLayer < (yCoord + 1); yLayer++)
             {
                 if (yLayer < numRowsCols && yLayer > -1)
                 {
-
                     // X PLUS ONE
                     if (xCoord + 1 < numRowsCols)
                     {
@@ -785,9 +799,10 @@ public class GameManager : Singleton<GameManager>
                 }
             }
         }
-        else if (cubeID.sidesTouchingMines != 0)
+        else if (cubeID.sidesTouchingMines != 0 && !(cubeID.GetComponent<CubeIdentifier>().hasBeenRevealed))
         {
-            cubeID.showSidesTouchingMinesText();
+            cubeID.showSidesTouchingMinesText(revealedCubesFullyHidden);
+            allRevealedCubesWithNumList.Add(cubeID.gameObject);
             numCubesRevealed++;
         }
 
@@ -888,6 +903,20 @@ public class GameManager : Singleton<GameManager>
 
         if (inCheatMode)
             revealAllMines();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void toggleRevealedCubeTransparency()
+    {
+        if (allRevealedCubesWithNumList.Count <= 0) return;
+
+        revealedCubesFullyHidden = !revealedCubesFullyHidden;
+        foreach(GameObject cube in allRevealedCubesWithNumList)
+        {
+            cube.GetComponent<CubeIdentifier>().toggleRevealedCubeWithNumTransparency();
+        }
     }
 
     /// <summary>

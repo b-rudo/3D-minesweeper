@@ -15,6 +15,7 @@ public class CubeIdentifier : MonoBehaviour
     public int cubeYIndex = 0;
     public int cubeZIndex = 0;
     public int sidesTouchingMines = 0;
+    public bool hasBeenRevealed = false;
     public bool permanentlyMineless = false;
     public cubeTypes cubeType;
 
@@ -107,8 +108,21 @@ public class CubeIdentifier : MonoBehaviour
     /// <summary>
     /// 
     /// </summary>
-    public void showSidesTouchingMinesText()
+    public void toggleRevealedCubeWithNumTransparency()
     {
+        if (GetComponent<Renderer>().enabled)
+            GetComponent<Renderer>().enabled = false;
+        else
+            GetComponent<Renderer>().enabled = true;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void showSidesTouchingMinesText(bool hideTransparency)
+    {
+        hasBeenRevealed = true;
+
         textOfsidesTouchingMines.text = sidesTouchingMines.ToString();
         textOfsidesTouchingMines.enabled = true;
 
@@ -120,6 +134,7 @@ public class CubeIdentifier : MonoBehaviour
 
         // Change our material to transparent to see the number
         GetComponent<Renderer>().material = transparentMat;
+        if (hideTransparency) GetComponent<Renderer>().enabled = false;
 
         // If we were flagged make sure to turn it off
         parentOfMineXFlags.SetActive(false);

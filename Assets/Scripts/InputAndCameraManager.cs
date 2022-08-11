@@ -10,6 +10,8 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
     // Set in inspector
     [Header("--- Controls --- ")]
     public KeyCode expandShrinkCubeDistanceKey;
+    public KeyCode openPauseMenuKey;
+    public KeyCode hideRevealedCubeOutlineKey;
 
     // Private
     private GameObject centerCubeReference;
@@ -62,7 +64,18 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
                 else
                     CameraLogic.Instance.attemptZoomInOrOut('-');
             }
+
+            // Key presses
+            if (Input.GetKeyDown(hideRevealedCubeOutlineKey))
+            {
+                GameManager.Instance.toggleRevealedCubeTransparency();
+            }
         }
+
+        /* Allow using this key even when player input isn't allowed since
+         * otherwise you can't close the pause menu with it */
+        if (Input.GetKeyDown(openPauseMenuKey))
+            GameManager.Instance.onQuestionMarkBtnClick();
     }
 
     /// <summary>
