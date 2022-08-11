@@ -9,6 +9,6 @@ public class SetAppVersNumTMP : MonoBehaviour
 {
     private void Awake()
     {
-        GetComponent<TextMeshProUGUI>().text = "Vers. " + Application.version;
+        GetComponent<TextMeshProUGUI>().text = "Vers. " + Application.version + "   |   2022";
     }
 }
