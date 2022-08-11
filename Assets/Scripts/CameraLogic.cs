@@ -13,12 +13,47 @@ public class CameraLogic : Singleton<CameraLogic>
     private float maxCameraZoomInZVal;
     private float maxCameraZoomOutZVal;
 
+    private bool cameraCurrentlyRotating = false;
+    private bool cameraRotatedForPauseScreen = false;
+    private Vector3 currentRotationTarget;
+    private Vector3 normalCameraRotation;
+    private Vector3 pauseMenuCameraRotation;
+
+    private bool hasSetStartingCameraRotVals = false;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private void Update()
+    {
+        if (cameraCurrentlyRotating)
+        {
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(currentRotationTarget), 145.0f * Time.deltaTime);
+
+            if (transform.rotation == Quaternion.Euler(currentRotationTarget))
+            {
+                cameraRotatedForPauseScreen = !cameraRotatedForPauseScreen;
+
+                cameraCurrentlyRotating = false;
+            }
+        }
+    }
+
     /// <summary>
     /// 
     /// </summary>
     public void onReturnToMenuAfterGame()
     {
         transform.position += new Vector3(-3, 0, 0);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="rot"></param>
+    public void setCameraRotation(Vector3 rot)
+    {
+        transform.rotation = Quaternion.Euler(rot);
     }
 
     /// <summary>
@@ -65,5 +100,37 @@ public class CameraLogic : Singleton<CameraLogic>
                                          transform.position.z + addToZVal);
 
         return true;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public bool getCameraCurrentlyRotating()
+    {
+        return cameraCurrentlyRotating;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void toggleRotateAwayForPauseScreen()
+    {
+        if (cameraCurrentlyRotating) return;
+
+        if (!hasSetStartingCameraRotVals)
+        {
+            normalCameraRotation = transform.eulerAngles;
+            pauseMenuCameraRotation = normalCameraRotation + new Vector3(-100, 0, 0);
+
+            hasSetStartingCameraRotVals = true;
+        }
+
+        if (cameraRotatedForPauseScreen)
+            currentRotationTarget = normalCameraRotation;
+        else
+            currentRotationTarget = pauseMenuCameraRotation;
+
+        cameraCurrentlyRotating = true;
     }
 }

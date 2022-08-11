@@ -40,22 +40,25 @@ public class DragToRotate : Singleton<DragToRotate>
     /// </summary>
     void LateUpdate()
     {
-        if (centerCubeReference)
+        if (InputAndCameraManager.Instance.getPlayerInputAllowed())
         {
-            if (Input.GetMouseButton(0))
+            if (centerCubeReference)
             {
-                velocityX += xSpeed * Input.GetAxis("Mouse X") * distance * 0.02f;
-                velocityY += ySpeed * Input.GetAxis("Mouse Y") * 0.02f;
-            }
-            rotationYAxis += velocityX;
-            rotationXAxis -= velocityY;
-            //rotationXAxis = ClampAngle(rotationXAxis, yMinLimit, yMaxLimit);
-            Quaternion toRotation = Quaternion.Euler(rotationXAxis, rotationYAxis, 0);
-            Quaternion rotation = toRotation;
+                if (Input.GetMouseButton(0))
+                {
+                    velocityX += xSpeed * Input.GetAxis("Mouse X") * distance * 0.02f;
+                    velocityY += ySpeed * Input.GetAxis("Mouse Y") * 0.02f;
+                }
+                rotationYAxis += velocityX;
+                rotationXAxis -= velocityY;
+                //rotationXAxis = ClampAngle(rotationXAxis, yMinLimit, yMaxLimit);
+                Quaternion toRotation = Quaternion.Euler(rotationXAxis, rotationYAxis, 0);
+                Quaternion rotation = toRotation;
 
-            transform.rotation = rotation;
-            velocityX = Mathf.Lerp(velocityX, 0, Time.deltaTime * smoothTime);
-            velocityY = Mathf.Lerp(velocityY, 0, Time.deltaTime * smoothTime);
+                transform.rotation = rotation;
+                velocityX = Mathf.Lerp(velocityX, 0, Time.deltaTime * smoothTime);
+                velocityY = Mathf.Lerp(velocityY, 0, Time.deltaTime * smoothTime);
+            }
         }
     }
 

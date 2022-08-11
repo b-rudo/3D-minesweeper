@@ -151,6 +151,15 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
     /// <summary>
     /// 
     /// </summary>
+    /// <returns></returns>
+    public bool getPlayerInputAllowed()
+    {
+        return playerInputAllowed;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     /// <param name="allowed"></param>
     public void setPlayerInputAllowed(bool allowed)
     {

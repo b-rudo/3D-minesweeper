@@ -4,13 +4,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GameManager : Singleton<GameManager>
 {
-    public enum theme { blueGreen }
+    public enum theme { Glacier, Rubble, Fever, Void }
+    private List<String> themeEnumStringList;
+    private int themeEnumListIndex;
 
     private const float interCubeSpacingIncrementVal = 0.1f;
     private const float interCubeSpacingMin = 0.1f;
@@ -43,6 +46,8 @@ public class GameManager : Singleton<GameManager>
     public Slider numRowsColsSlider;
     public TextMeshProUGUI numRowsColsTxt;
 
+    public TextMeshProUGUI themeNameTxt;
+
     [Header("--- Hud Canvas References --- ")]
     public GameObject hudCanvas;
     public TextMeshProUGUI timerTxt;
@@ -50,15 +55,27 @@ public class GameManager : Singleton<GameManager>
     public GameObject youWonTxt;
     public GameObject youLostTxt;
     public GameObject menuRestartBtnParent;
+    public GameObject pauseBtn;
     public List<GameObject> allInstructionElements;
 
     [Header("--- Themes --- ")]
     public List<GameObject> allObjsWithThemedText;
 
-    [Header("--- BlueGreen Theme --- ")]
-    public Material blueGreenSkybox;
-    private Color32 blueGreenThemeColor = new Color32(141, 255, 129, 255);
+    [Header("--- Glacier Theme --- ")]
+    public Material GlacierSkybox;
+    private Color32 GlacierThemeColor = new Color32(148, 207, 255, 255);//(141, 255, 129, 255);
 
+    [Header("--- Rubble Theme --- ")]
+    public Material RubbleSkybox;
+    private Color32 RubbleThemeColor = new Color32(176, 139, 110, 255);
+
+    [Header("--- Fever Theme --- ")]
+    public Material FeverSkybox;
+    private Color32 FeverThemeColor = new Color32(255, 209, 10, 255);
+
+    [Header("--- Void Theme --- ")]
+    public Material VoidSkybox;
+    private Color32 VoidThemeColor = new Color32(255, 255, 255, 255);
 
 
     // Private vars
@@ -88,7 +105,11 @@ public class GameManager : Singleton<GameManager>
     {
         // Init variables
         cubeLengthWidthHeight = basicCubePrefab.transform.localScale.x;
-        currentTheme = theme.blueGreen;
+
+        // Create our enum theme string list and randomly set a theme
+        themeEnumStringList = Enum.GetNames(typeof(theme)).ToList();
+        themeEnumListIndex = UnityEngine.Random.Range(0, themeEnumStringList.Count);
+        currentTheme = (theme)System.Enum.Parse(typeof(theme), themeEnumStringList[themeEnumListIndex]);
 
         // Easy = 0, Medium = 1, Hard = 2, Expert = 3
         difficultyToGridMinePercentage.Add(0, easyPercentageOfMinesInGrid);
@@ -136,13 +157,29 @@ public class GameManager : Singleton<GameManager>
     private void updateTheme()
     {
         Material skyboxMat;
+        Vector3 cameraRot;
+
+        // Change the theme title
+        themeNameTxt.text = currentTheme.ToString();
 
         switch(currentTheme)
         {
             default:
-            case theme.blueGreen:
-                currentThemeColor = blueGreenThemeColor;
-                skyboxMat = blueGreenSkybox;
+            case theme.Glacier:
+                currentThemeColor = GlacierThemeColor;
+                skyboxMat = GlacierSkybox;
+                break;
+            case theme.Rubble:
+                currentThemeColor = RubbleThemeColor;
+                skyboxMat = RubbleSkybox;
+                break;
+            case theme.Fever:
+                currentThemeColor = FeverThemeColor;
+                skyboxMat = FeverSkybox;
+                break;
+            case theme.Void:
+                currentThemeColor = VoidThemeColor;
+                skyboxMat = VoidSkybox;
                 break;
         }
 
@@ -177,7 +214,10 @@ public class GameManager : Singleton<GameManager>
                                                                currentThemeColor.a);
 
                 obj.GetComponent<Button>().colors = themeColorBlock;
-                Debug.Log("YT");
+            }
+            else if (obj.GetComponent<Light>())
+            {
+                obj.GetComponent<Light>().color = currentThemeColor;
             }
         }
     }
@@ -437,6 +477,8 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     private void onGameWonOrLost()
     {
+        pauseBtn.SetActive(false);
+
         timerIsActive = false;
         timerTxt.color = Color.red;
 
@@ -482,6 +524,7 @@ public class GameManager : Singleton<GameManager>
         youWonTxt.SetActive(false);
         youLostTxt.SetActive(false);
         menuRestartBtnParent.SetActive(false);
+        pauseBtn.SetActive(true);
     }
 
     /// <summary>
@@ -499,6 +542,28 @@ public class GameManager : Singleton<GameManager>
         return (int)(Math.Round(numMinesInGridRaw, MidpointRounding.AwayFromZero));
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="toggleToRight"></param>
+    private void onThemeToggle(bool toggleToRight)
+    {
+        if (toggleToRight)
+            themeEnumListIndex++;
+        else
+            themeEnumListIndex--;
+
+        // Allow wrap-arounds in the list
+        if (themeEnumListIndex > themeEnumStringList.Count() - 1)
+            themeEnumListIndex = 0;
+        else if (themeEnumListIndex < 0)
+            themeEnumListIndex = themeEnumStringList.Count() - 1;
+
+        currentTheme = (theme)System.Enum.Parse(typeof(theme), themeEnumStringList[themeEnumListIndex]);
+
+        updateTheme();
+    }
+
     /* ************************************************************************
      *                          PUBLIC FUNCTIONS
      * ***********************************************************************/
@@ -510,6 +575,8 @@ public class GameManager : Singleton<GameManager>
     {
         // Turn off our menu canvas
         mainCanvas.SetActive(false);
+
+        pauseBtn.SetActive(true);
         /* Delete all the allCubeHolder's children if they exist from a
          * previous game */
         if (allCubeHolder.transform.childCount > 1 && mineHolder.transform.childCount >= 0)
@@ -545,10 +612,37 @@ public class GameManager : Singleton<GameManager>
     /// <summary>
     /// 
     /// </summary>
+    public void onThemeRightClick()
+    {
+        onThemeToggle(true);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void onThemeLeftClick()
+    {
+        onThemeToggle(false);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     public void onQuestionMarkBtnClick()
     {
+        // Do nothing if camera currently rotating
+        if (CameraLogic.Instance.getCameraCurrentlyRotating()) return;
+
         instructionInfoVisible = !instructionInfoVisible;
         toggleInstructionElementsVisibility();
+
+        // Pause/unpause the game
+        timerIsActive = !instructionInfoVisible;
+        InputAndCameraManager.Instance.setPlayerInputAllowed(!instructionInfoVisible);
+
+        /* When paused, rotate the camera away so the player cannot continue
+         * looking at the cube and "cheat" while the timer isn't ticking */
+        CameraLogic.Instance.toggleRotateAwayForPauseScreen();
     }
 
     /// <summary>
