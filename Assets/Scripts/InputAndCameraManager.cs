@@ -10,7 +10,7 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
     // Set in inspector
     [Header("--- Controls --- ")]
     public KeyCode expandShrinkCubeDistanceKey;
-    public KeyCode openPauseMenuKey;
+    //public KeyCode openPauseMenuKey;
     public KeyCode hideRevealedCubeOutlineKey;
 
     // Private
@@ -89,8 +89,8 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
 
         /* Allow using this key even when player input isn't allowed since
          * otherwise you can't close the pause menu with it */
-        if (Input.GetKeyDown(openPauseMenuKey))
-            GameManager.Instance.onQuestionMarkBtnClick();
+        //if (Input.GetKeyDown(openPauseMenuKey))
+        //    GameManager.Instance.onQuestionMarkBtnClick();
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
     /// <returns></returns>
     private IEnumerator revealCube()
     {
-        GameObject cube = returnMousePosCubeIfExists();
+        GameObject cube = returnCurrentCubeSelectedMouseHover();
 
         if (cube != null)
         {
@@ -133,7 +133,7 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
     /// </summary>
     private void placeOrRemoveMineFlag()
     {
-        GameObject cube = returnMousePosCubeIfExists();
+        GameObject cube = returnCurrentCubeSelectedMouseHover();
 
         if (!cube) return;
 
@@ -152,11 +152,16 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
         GameManager.Instance.updateMinesPlacedTxt(valToAdd);
     }
 
+
+    /* ************************************************************************
+     *                          PUBLIC FUNCTIONS
+     * ***********************************************************************/
+
     /// <summary>
     /// 
     /// </summary>
     /// <returns></returns>
-    private GameObject returnMousePosCubeIfExists()
+    public GameObject returnCurrentCubeSelectedMouseHover()
     {
         // Send out a raycast to see if we clicked on a game cube
         RaycastHit hit;
@@ -170,11 +175,6 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
 
         return null;
     }
-
-
-    /* ************************************************************************
-     *                          PUBLIC FUNCTIONS
-     * ***********************************************************************/
 
     /// <summary>
     /// 

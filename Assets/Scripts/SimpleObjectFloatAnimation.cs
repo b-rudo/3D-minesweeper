@@ -20,7 +20,7 @@ public class SimpleObjectFloatAnimation : MonoBehaviour
     /// <summary>
     /// 
     /// </summary>
-    void Awake()
+    void Start()
     {
         startingPos = transform.position;
     }

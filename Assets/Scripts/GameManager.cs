@@ -665,6 +665,12 @@ public class GameManager : Singleton<GameManager>
         /* When paused, rotate the camera away so the player cannot continue
          * looking at the cube and "cheat" while the timer isn't ticking */
         CameraLogic.Instance.toggleRotateAwayForPauseScreen();
+
+        /* If the player was hovering over a cube when she entered the pause
+         * menu, make sure to shrink that cube back down */
+        GameObject currentlySelectedCube = InputAndCameraManager.Instance.returnCurrentCubeSelectedMouseHover();
+        if (currentlySelectedCube)
+            currentlySelectedCube.GetComponent<CubeIdentifier>().returnCubeToNormalSize();
     }
 
     /// <summary>

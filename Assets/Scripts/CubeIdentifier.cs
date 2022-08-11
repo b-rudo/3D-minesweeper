@@ -83,14 +83,22 @@ public class CubeIdentifier : MonoBehaviour
     private void OnMouseExit()
     {
         if (InputAndCameraManager.Instance.getCanRevealOrFlagCubes())
-            transform.localScale -= new Vector3(mouseHoverCubeGrowFactor,
-                                            mouseHoverCubeGrowFactor,
-                                            mouseHoverCubeGrowFactor);
+            returnCubeToNormalSize();
     }
 
     /* ************************************************************************
      *                          PUBLIC FUNCTIONS
      * ***********************************************************************/
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void returnCubeToNormalSize()
+    {
+        transform.localScale -= new Vector3(mouseHoverCubeGrowFactor,
+                                            mouseHoverCubeGrowFactor,
+                                            mouseHoverCubeGrowFactor);
+    }
 
     /// <summary>
     /// 
@@ -131,6 +139,10 @@ public class CubeIdentifier : MonoBehaviour
         if (sidesTouchingMinesColorDict.ContainsKey(sidesTouchingMines))
         {
             textOfsidesTouchingMines.color = sidesTouchingMinesColorDict[sidesTouchingMines];
+        }
+        else
+        {
+            textOfsidesTouchingMines.color = Color.white;
         }
 
         // Change our material to transparent to see the number
