@@ -2,6 +2,8 @@
 
 _"Modern" Minesweeper created by Robert Donner and Curtis Johnson._
 
+[Play now for free on itch.io!](https://b-rudo.itch.io/celestial-minesweeper-3d)
+
 #### Features
 
 *   4 different themes
