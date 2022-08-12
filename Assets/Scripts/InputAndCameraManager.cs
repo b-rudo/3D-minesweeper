@@ -10,7 +10,7 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
     // Set in inspector
     [Header("--- Controls --- ")]
     public KeyCode expandShrinkCubeDistanceKey;
-    //public KeyCode openPauseMenuKey;
+    public KeyCode openPauseMenuKey;
     public KeyCode hideRevealedCubeOutlineKey;
 
     // Private
@@ -89,8 +89,8 @@ public class InputAndCameraManager : Singleton<InputAndCameraManager>
 
         /* Allow using this key even when player input isn't allowed since
          * otherwise you can't close the pause menu with it */
-        //if (Input.GetKeyDown(openPauseMenuKey))
-        //    GameManager.Instance.onQuestionMarkBtnClick();
+        if (Input.GetKeyDown(openPauseMenuKey))
+            GameManager.Instance.onQuestionMarkBtnClick();
     }
 
     /// <summary>

@@ -744,6 +744,14 @@ public class GameManager : Singleton<GameManager>
     /// <summary>
     /// 
     /// </summary>
+    public void onSeeCodeBtnClick()
+    {
+        Application.OpenURL("https://github.com/b-rudo/3D-minesweeper");
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     /// <returns></returns>
     public int getNumRowsCols()
     {
