@@ -33,9 +33,8 @@ Use "Cheat Mode" in the game to better understand how this numbering system work
 #### Credits
 
 Project by b\_rudo ([see the code here](https://github.com/b-rudo/3D-minesweeper))  
-Skyboxes by [Hedgehog Team.](https://assetstore.unity.com/packages/2d/textures-materials/sky/skybox-volume-2-nebula-3392#description)  
-Computer mouse icon by [srip - Flaticon  
-](https://www.flaticon.com/free-icons/computer-mouse "computer mouse icons")
+Skyboxes by [Hedgehog Team](https://assetstore.unity.com/packages/2d/textures-materials/sky/skybox-volume-2-nebula-3392#description)  
+Computer mouse icon by [srip - Flaticon](https://www.flaticon.com/free-icons/computer-mouse "computer mouse icons")
 
   
 
